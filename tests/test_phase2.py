@@ -38,7 +38,10 @@ def aller(pg, route, base=BASE):
     pg.wait_for_timeout(120)
 
 def pas_de_defilement_horizontal(pg):
-    return pg.evaluate("document.documentElement.scrollWidth <= window.innerWidth + 0.5")
+    """Ni défilement horizontal (largeur réelle de l'écran), ni élément qui dépasse de sa carte."""
+    return pg.evaluate("""document.documentElement.scrollWidth <= document.documentElement.clientWidth + 0.5 &&
+      ![...document.querySelectorAll('.carte')].some(c => { const d = c.getBoundingClientRect().right + 0.5;
+        return [...c.querySelectorAll('*')].some(e => { const r = e.getBoundingClientRect(); return r.width > 0 && r.right > d; }); })""")
 
 def petites_cibles(pg):
     # Cibles tactiles < 44 px (hors liens dans un paragraphe de texte)

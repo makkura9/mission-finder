@@ -6,7 +6,7 @@ Site de révision pour smartphone : fichiers et dossiers sous macOS (préparatio
 - Aucune donnée n'est envoyée : pas de compte, pas de statistiques, pas de ressource externe.
 - La progression des élèves reste uniquement dans le navigateur de leur téléphone.
 
-**État actuel : phase 3 — Quiz express (90 questions), Révision du jour (répétition espacée), Mon bilan, Profil, Aide.**
+**État actuel : phase 4 — Quiz express (90 questions), Révision du jour, Clavier secret (20 raccourcis), Visite du Mac (Bureau simulé), Mon bilan, Profil, Aide.**
 
 ---
 
@@ -63,10 +63,15 @@ js/ui.js                 petits outils d'affichage
 js/storage.js            sauvegarde de la progression (localStorage)
 js/progression.js        points, niveaux, étoiles, maîtrise, records
 js/leitner.js            répétition espacée (boîtes de Leitner), Révision du jour
+js/partie.js             règles communes des parties (points, série, étoiles, écran de résultat)
 js/figures.js            illustrations des questions (barre des menus, Dock, fichier, Finder)
 js/modules/qcm.js        Quiz express
+js/modules/raccourcis.js Clavier secret (clavier virtuel)
+js/modules/bureau.js     Visite du Mac (Bureau simulé, Spotlight)
 js/app.js                navigation, accueil, bilan, profil, aide
 data/questions.js        banque de questions (modifiable)
+data/raccourcis.js       les 20 raccourcis de la fiche (Clavier secret)
+data/bureau.js           légende du Bureau, applications du Dock, résultats Spotlight (Visite du Mac)
 data/objectifs.js        objectifs d'apprentissage
 data/niveaux.js          niveaux et seuils de points
 data/textes.js           messages de retour, numéro de version
@@ -82,7 +87,7 @@ Dans le `localStorage` du navigateur de l'élève (clé `missionFinder.v1`). Le 
 
 ### Relire les questions
 
-Ouvrir https://makkura9.github.io/mission-finder/tests/relecture.html (sur ordinateur) : toutes les questions, avec la bonne réponse, les explications et la source. Les questions à relire portent le badge « À relire ». Pour imprimer : Ctrl + P (ou ⌘ P) → « Enregistrer au format PDF ».
+Ouvrir https://makkura9.github.io/mission-finder/tests/relecture.html (sur ordinateur) : toutes les questions, avec la bonne réponse, les explications et la source, puis les textes de « Visite du Mac » et de « Clavier secret ». Ce qui reste à relire porte le badge « À relire ». Pour imprimer : Ctrl + P (ou ⌘ P) → « Enregistrer au format PDF ».
 
 ### Révision du jour (répétition espacée)
 

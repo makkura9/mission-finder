@@ -1,8 +1,7 @@
 /* ==========================================================================
    Mission Finder — banque de questions du « Quiz express »
    Phase 3 : 90 questions (BUR 11, FIN 26, TYP 16, RAC 20, REC 17).
-   Les 20 premières (phase 2) ont été relues et validées par l'enseignant ;
-   les autres sont signalées par « Questions ajoutées en phase 3 (à relire) ».
+   Les 90 questions ont été relues et validées par l'enseignant (phases 2 et 3).
    ==========================================================================
 
    FORMAT D'UNE QUESTION (chaque question est entre { }, suivie d'une virgule) :
@@ -86,7 +85,7 @@ window.QUESTIONS = [
     source: "Tutoriel « Découvrir les fichiers », p. 1 (légende d)"
   },
 
-  /* Questions ajoutées en phase 3 (à relire) */
+  /* Questions ajoutées en phase 3 (relues et validées) */
   {
     id: "bur-04",
     objectif: "BUR1",
@@ -338,7 +337,7 @@ window.QUESTIONS = [
     source: "Tutoriel « Découvrir les fichiers », p. 2 (étapes 4 à 6) et p. 4 (étapes 17 et 18)"
   },
 
-  /* Questions ajoutées en phase 3 (à relire) */
+  /* Questions ajoutées en phase 3 (relues et validées) */
   {
     id: "fin-08",
     objectif: "FIN1",
@@ -740,7 +739,7 @@ window.QUESTIONS = [
     source: "Énoncé de l'exercice 1"
   },
 
-  /* Questions ajoutées en phase 3 (à relire) */
+  /* Questions ajoutées en phase 3 (relues et validées) */
   {
     id: "typ-05",
     objectif: "TYP1",
@@ -999,7 +998,7 @@ window.QUESTIONS = [
     source: "Fiche « Principaux raccourcis clavier »"
   },
 
-  /* Questions ajoutées en phase 3 (à relire) */
+  /* Questions ajoutées en phase 3 (relues et validées) */
   {
     id: "rac-04",
     objectif: "RAC",
@@ -1353,7 +1352,7 @@ window.QUESTIONS = [
     source: "Énoncé de l'exercice 4 (recherche avancée)"
   },
 
-  /* Questions ajoutées en phase 3 (à relire) */
+  /* Questions ajoutées en phase 3 (relues et validées) */
   {
     id: "rec-04",
     objectif: "REC1",
