@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Questions à relire — Mission Finder</title>
+<style>
+  @page { size: A4; margin: 12mm 12mm 14mm; }
+  body { font-family: "DejaVu Sans", Arial, sans-serif; font-size: 8.3pt; line-height: 1.25; color: #111; margin: 0; }
+  h1 { font-size: 14pt; margin: 0 0 2mm; }
+  .intro { font-size: 8.5pt; color: #333; margin: 0 0 4mm; }
+  #liste { column-count: 2; column-gap: 5mm; }
+  .q { border: 1px solid #999; border-radius: 3px; padding: 2.5mm 3mm; margin-bottom: 3mm; break-inside: avoid; }
+  .tete { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4mm; font-size: 8pt; color: #333; border-bottom: 1px solid #ddd; padding-bottom: 1mm; margin-bottom: 1.5mm; }
+  .tete b { color: #0D6B73; }
+  .enonce { font-weight: 700; font-size: 9.5pt; margin: 0 0 1.5mm; }
+  ol { margin: 0 0 1.5mm; padding-left: 6mm; }
+  li { margin: 0.4mm 0; }
+  .ok { font-weight: 700; color: #1A7536; }
+  .err { color: #555; font-size: 8pt; }
+  .expl { margin: 0 0 1mm; }
+  .src { font-size: 8pt; color: #444; }
+  .cases { font-size: 8pt; margin-top: 1mm; color: #333; }
+  .figure { margin: 1mm 0 2mm; max-width: 85mm; }
+  .figure figcaption { font-size: 7pt; color: #555; }
+  .fig-barre { display: block; border: 1px solid #ccc; }
+  .fig-dock { display: flex; gap: 2px; padding: 4px; background: #D9DCE0; border-radius: 8px; max-width: 80mm; }
+  .fig-dock-app { flex: 1; display: flex; flex-direction: column; align-items: center; }
+  .fig-dock-point { width: 4px; height: 4px; border-radius: 50%; margin: 2px 0; }
+  .fig-dock-point.est-ouverte { background: #111; }
+  .fig-dock-nom { font-size: 7pt; }
+  .fig-fichier { display: flex; align-items: center; gap: 3mm; }
+  .fig-fichier svg { width: 22px; height: 27px; }
+  .fig-fichier-nom { font-family: "DejaVu Sans Mono", monospace; font-weight: 700; }
+</style>
+</head>
+<body>
+<h1>Mission Finder — questions à relire</h1>
+<p class="intro" id="intro"></p>
+<div id="liste"></div>
+<script src="../data/objectifs.js"></script>
+<script src="../data/questions.js"></script>
+<script src="../js/ui.js"></script>
+<script src="../js/figures.js"></script>
+<script>
+  const esc = MF.ui.esc;
+  const TYPES = { unique: 'Choix unique', multiple: 'Choix multiple', vraifaux: 'Vrai ou faux', ranger: 'Où ranger ?' };
+  document.getElementById('intro').textContent =
+    QUESTIONS.length + ' questions. Bonne(s) réponse(s) en vert (✓). Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. ' +
+    'Cochez « OK » ou notez la correction (numéro de la question + texte corrigé).';
+  let h = '';
+  QUESTIONS.forEach((q, n) => {
+    const obj = OBJECTIFS.liste.find(o => o.code === q.objectif);
+    h += '<div class="q"><div class="tete"><span><b>' + (n + 1) + '. ' + esc(q.id) + '</b> · ' + esc(q.objectif) + ' ' + esc(obj.court) +
+      '</span><span>' + TYPES[q.type] + ' · difficulté ' + q.difficulte + '</span></div>' +
+      '<p class="enonce">' + esc(q.enonce) + '</p>' + MF.figures.rendre(q.figure) + '<ol type="A">';
+    q.propositions.forEach((p, i) => {
+      const bonne = q.bonnes.includes(i);
+      h += '<li><span class="' + (bonne ? 'ok' : '') + '">' + (bonne ? '✓ ' : '') + esc(p) + '</span>' +
+        (!bonne && q.erreurs && q.erreurs[i] ? '<br><span class="err">→ ' + esc(q.erreurs[i]) + '</span>' : '') + '</li>';
+    });
+    h += '</ol><p class="expl"><b>Explication :</b> ' + esc(q.explication) + '</p><p class="src"><b>Source :</b> ' + esc(q.source) + '</p>' +
+      '<p class="cases">☐ OK &nbsp;&nbsp; ☐ À corriger : ………………………………………………………………………………</p></div>';
+  });
+  document.getElementById('liste').innerHTML = h;
+</script>
+</body>
+</html>

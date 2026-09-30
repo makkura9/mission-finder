@@ -30,7 +30,13 @@ L'interface de GitHub est en anglais. Les libellés ci-dessous sont ceux connus 
 
 Adresse du site : `https://<nom-utilisateur>.github.io/mission-finder/`
 
-### Mettre à jour le site (phases suivantes)
+### Mettre à jour le site avec Claude Code (à partir de la phase 3)
+
+1. Dans la session Claude Code, quand le travail est prêt, cliquer **Create PR** (proposer les modifications).
+2. Sur GitHub, ouvrir la *pull request*, cliquer **Merge pull request**, puis **Confirm merge** (fusionner = publier dans la version principale).
+3. Attendre 1 à 3 minutes, puis vérifier le numéro de version en bas de l'accueil du site.
+
+### Mettre à jour le site à la main (sans Claude Code)
 
 1. **Add file** → **Upload files** → glisser le contenu du nouveau dossier extrait → **Commit changes**. Les fichiers de même nom sont remplacés.
 2. Attendre 1 à 3 minutes (onglet **Actions** : la ligne *pages build and deployment* doit avoir une coche verte).
@@ -63,6 +69,9 @@ data/objectifs.js        objectifs d'apprentissage
 data/niveaux.js          niveaux et seuils de points
 data/textes.js           messages de retour, numéro de version
 img/                     icônes du site
+CLAUDE.md                consignes lues par Claude Code à chaque session
+docs/                    cahier des charges (non utilisé par le site)
+tests/                   tests automatiques (non utilisés par le site)
 ```
 
 ### Où est enregistrée la progression ?
