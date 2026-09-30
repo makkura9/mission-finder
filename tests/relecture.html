@@ -64,12 +64,15 @@
 <div id="liste"></div>
 <div id="phase4"></div>
 <div id="phase5"></div>
+<div id="phase6"></div>
 <script src="../data/objectifs.js"></script>
 <script src="../data/questions.js"></script>
 <script src="../data/raccourcis.js"></script>
 <script src="../data/bureau.js"></script>
 <script src="../data/missions-finder.js"></script>
 <script src="../data/libelles-macos.js"></script>
+<script src="../data/fichiers-virtuels.js"></script>
+<script src="../js/recherche-modele.js"></script>
 <script src="../js/ui.js"></script>
 <script src="../js/figures.js"></script>
 <script>
@@ -92,7 +95,7 @@
     ? QUESTIONS.length + ' questions, dont ' + nouvelles + ' à relire (badge « À relire »). Bonne(s) réponse(s) en vert (✓). ' +
       'Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. Cochez « OK » ou notez la correction (identifiant de la question + texte corrigé).'
     : 'Les ' + QUESTIONS.length + ' questions du Quiz express sont validées (cochez la case pour les afficher). ') +
-    ' Les textes de « Visite du Mac » et de « Clavier secret » sont validés (phase 4). À relire en phase 5 : « Le grand rangement », ci-dessous.';
+    ' Les textes des phases 4 et 5 sont validés. À relire en phase 6 : « Détective du Finder », ci-dessous.';
   function afficher() {
   const voirValidees = document.getElementById('voir-validees').checked;
   let h = '';
@@ -150,14 +153,14 @@
   // Phase 5 : « Le grand rangement »
   (function () {
     const nomDe = id => ATELIER.fichiers.find(f => f.id === id).nom;
-    let h = '<h2>Le grand rangement — les 9 missions <span class="badge badge-nouvelle">À relire</span></h2>' +
+    let h = '<h2>Le grand rangement — les 9 missions <span class="badge badge-validee">Validée</span></h2>' +
       '<table class="relire"><thead><tr><th>Mission</th><th>Contexte et consigne</th><th>Indice 1</th><th>Indice 2 (le dernier)</th></tr></thead><tbody>';
     ATELIER.missions.forEach((m, k) => {
       h += '<tr><td><b>' + (k + 1) + '. ' + esc(m.titre) + '</b><br>' + esc(m.objectif) + '</td><td>' + esc(m.contexte) + '<br><b>' + esc(m.consigne) + '</b></td><td>' +
         esc(m.indices[0]) + '</td><td>' + esc(m.indices[1]) + '</td></tr>';
     });
     h += '</tbody></table>' +
-      '<h2>Le grand rangement — fichiers fictifs <span class="badge badge-nouvelle">À relire</span></h2>' +
+      '<h2>Le grand rangement — fichiers fictifs <span class="badge badge-validee">Validée</span></h2>' +
       '<table class="relire"><thead><tr><th>Fichier</th><th>Rangement attendu</th><th>Remarque</th></tr></thead><tbody>';
     ATELIER.fichiers.forEach(f => {
       const dans = ATELIER.archive.contenu.includes(f.id) ? 'dans ' + ATELIER.archive.nom : Object.keys(ATELIER.depart).find(l => ATELIER.depart[l].includes(f.id));
@@ -172,6 +175,34 @@
       '<tr><th>Points et étoiles</th><td>100 points la première fois qu\'une mission est réussie (0 ensuite, pour éviter de « farmer ») ; ★★★ sans indice, ★★ avec un indice, ★ avec le dernier. Aucune pénalité pour une vérification ratée.</td></tr>' +
       '</tbody></table>';
     document.getElementById('phase5').innerHTML = h;
+  })();
+
+  // Phase 6 : « Détective du Finder »
+  (function () {
+    const R = RECHERCHE, M = MF.rechercheModele, auj = new Date();
+    const ligne = l => esc(l.critere + ' ' + l.operateur + ' ' + (l.valeur !== undefined ? '« ' + l.valeur + ' »' : l.date ? l.date.split('-').reverse().join('.') : l.nombre + (l.unite ? ' ' + l.unite : '')));
+    let h = '<h2>Détective du Finder — les missions <span class="badge badge-nouvelle">À relire</span></h2>' +
+      '<table class="relire"><thead><tr><th>Mission</th><th>Consigne et indices</th><th>Recherche(s) acceptée(s) → résultat attendu</th><th>Erreurs typiques refusées</th></tr></thead><tbody>';
+    R.missions.forEach((m, k) => {
+      const attendu = m.solutions ? M.attendu(m.id, auj).map(e => esc(e.nom)).join(', ') : '';
+      h += '<tr><td><b>' + (m.partieA ? 'A' : k) + '. ' + esc(m.titre) + '</b><br>' + esc(m.objectif) + '</td><td><b>' + esc(m.consigne) + '</b><br>1. ' + esc(m.indices[0]) + '<br>2. ' + esc(m.indices[1]) + '</td><td>' +
+        (m.solutions ? m.solutions.map(s => s.map(ligne).join(' ET ')).join('<br>ou ') + '<br>→ ' + attendu
+          : m.partieA ? R.spotlight.map(s => esc(M.element(s.id).nom)).join(', ')
+          : m.photos.map(id => esc(M.element(id).nom) + ' (' + esc(M.element(id).apercu) + ', ' + esc(M.element(id).lieu) + ')').join('<br>')) + '</td><td>' +
+        (m.erreurs ? m.erreurs.map(s => s.map(ligne).join(' ET ')).join('<br>') : '') + '</td></tr>';
+    });
+    h += '</tbody></table><h2>Détective du Finder — fichiers fictifs (' + R.elements.length + ') <span class="badge badge-nouvelle">À relire</span></h2>' +
+      '<table class="relire"><thead><tr><th>Nom</th><th>Type</th><th>Dossier</th><th>Modifié</th><th>Auteur</th><th>Pages</th><th>Contenu (mots)</th></tr></thead><tbody>';
+    R.elements.forEach(e => {
+      h += '<tr><td>' + esc(e.nom) + '</td><td>' + esc(e.type) + '</td><td>' + esc(e.dossier) + '</td><td>' + (e.date ? esc(e.date.split('-').reverse().join('.')) : 'il y a ' + e.jours + ' j') +
+        '</td><td>' + esc(e.auteur || '') + '</td><td>' + (e.pages || '') + '</td><td>' + esc((e.mots || []).join(', ')) + (e.lieu ? ' — lieu : ' + esc(e.lieu) : '') + '</td></tr>';
+    });
+    const LR = LIBELLES_MACOS.recherche;
+    h += '</tbody></table><table class="relire"><tbody>' +
+      '<tr><th>Libellés « à vérifier »</th><td>' + esc(LR.rechercher) + ' ' + esc(LR.ceMac) + ' · opérateurs : ' + Object.keys(LR.operateurs).map(c => esc(c) + ' → ' + LR.operateurs[c].map(esc).join(' / ')).join(' ; ') + '</td></tr>' +
+      '<tr><th>Simplifications</th><td>Pas de champ de recherche libre (seulement les lignes de critères) ; majuscules et accents ignorés dans « contient » ; dans le site, un PDF n\'est pas de type « Document » (à vérifier sur un Mac) ; photos : panneau « Métadonnées de la photo » sans nommer l\'outil de macOS (votre choix 1).</td></tr>' +
+      '</tbody></table>';
+    document.getElementById('phase6').innerHTML = h;
   })();
 </script>
 </body>

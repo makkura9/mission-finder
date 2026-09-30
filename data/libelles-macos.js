@@ -24,6 +24,26 @@ window.LIBELLES_MACOS = {
   /* Nom donné à un nouveau dossier (à vérifier). */
   nouveauDossierNom: "dossier sans titre",
 
+  /* Détective du Finder : recherche avancée (⌘ F).
+     Critères et valeurs du critère « Type » : noms repris des énoncés des exercices 4 et 5 (décision de l'enseignant).
+     Opérateurs, « Rechercher : », « Ce Mac » : à vérifier sur un Mac du gymnase. */
+  recherche: {
+    rechercher: "Rechercher :",
+    ceMac: "Ce Mac",
+    criteres: ["Type", "Nom", "Contenu", "Date de modification", "Auteur", "Extension", "Nombre de pages"],
+    operateurs: {
+      "Type": ["est"],
+      "Nom": ["contient"],
+      "Contenu": ["contient"],
+      "Auteur": ["contient"],
+      "Extension": ["est"],
+      "Date de modification": ["dans les derniers", "avant le", "après le"],
+      "Nombre de pages": ["est supérieur à", "est inférieur à", "est égal à"]
+    },
+    valeursType: ["Archive", "PDF", "Image", "Vidéo", "Document", "Texte", "Musique", "Dossier", "Application"],
+    unites: ["jours", "semaines"]
+  },
+
   /* Type affiché par « Lire les informations » (à vérifier). */
   types: {
     dossier: "Dossier",

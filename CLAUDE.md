@@ -46,10 +46,10 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 ## 4. Architecture et conventions techniques
 
 - HTML + CSS + JavaScript « vanilla », **sans module ES** (`<script type="module">` est bloqué en `file://`), sans framework, sans compilation, sans `npm` pour le site, **sans aucune ressource externe** (CDN, polices web, analytics).
-- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.leitner`, `MF.figures`, `MF.partie`, `MF.qcm`, `MF.clavier`, `MF.bureau`, `MF.atelierModele`, `MF.atelier`).
-- Données dans `data/*.js` (`window.QUESTIONS`, `window.OBJECTIFS`, `window.NIVEAUX`, `window.TEXTES`, `window.RACCOURCIS`, `window.BUREAU`, `window.ATELIER`, `window.LIBELLES_MACOS`), **jamais** de `fetch` de JSON : le site doit marcher ouvert par double-clic.
+- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.leitner`, `MF.figures`, `MF.partie`, `MF.qcm`, `MF.clavier`, `MF.bureau`, `MF.atelierModele`, `MF.atelier`, `MF.rechercheModele`, `MF.recherche`).
+- Données dans `data/*.js` (`window.QUESTIONS`, `window.OBJECTIFS`, `window.NIVEAUX`, `window.TEXTES`, `window.RACCOURCIS`, `window.BUREAU`, `window.ATELIER`, `window.LIBELLES_MACOS`, `window.RECHERCHE`), **jamais** de `fetch` de JSON : le site doit marcher ouvert par double-clic.
 - **Chemins relatifs uniquement** (`css/style.css`, jamais `/css/…`).
-- Navigation par ancre : `#/accueil`, `#/qcm`, `#/qcm/partie`, `#/qcm/resultat`, `#/clavier`, `#/clavier/partie`, `#/clavier/resultat`, `#/bureau`, `#/bureau/partie`, `#/bureau/resultat`, `#/atelier`, `#/atelier/mission`, `#/bilan`, `#/profil`, `#/aide` (routeur dans `js/app.js`).
+- Navigation par ancre : `#/accueil`, `#/qcm`, `#/qcm/partie`, `#/qcm/resultat`, `#/clavier`, `#/clavier/partie`, `#/clavier/resultat`, `#/bureau`, `#/bureau/partie`, `#/bureau/resultat`, `#/atelier`, `#/atelier/mission`, `#/recherche`, `#/recherche/mission`, `#/bilan`, `#/profil`, `#/aide` (routeur dans `js/app.js`).
 - Le manifeste n'est déclaré qu'en `http(s)` (petit script dans `<head>`) pour éviter une erreur console en `file://`.
 - Sauvegarde : `localStorage`, clé unique `missionFinder.v1`, objet avec `app` et `version` (migrations dans `js/storage.js`) ; toute lecture/écriture en `try/catch` ; repli en mémoire + bandeau si stockage indisponible ; export/import par code `MF1-` + base64 (UTF-8).
 - Score : 10 points du premier coup, 5 au 2e essai, 0 ensuite ; bonus de série +2 par réponse juste **du premier coup** consécutive (dès la 2e), +10 max par partie ; étoiles sur points de base / (10 × n) : ★ ≥ 50 %, ★★ ≥ 75 %, ★★★ = 100 % ; missions (phases 5-6) : 100 points, ★★★ sans indice, ★★ avec indice, ★ avec le dernier indice. Maîtrise d'un objectif : % de justes du premier coup sur les 10 dernières réponses, « à découvrir » sous 3 réponses ; maîtrise d'un thème = moyenne des objectifs évalués. Niveaux dans `data/niveaux.js`.
@@ -68,6 +68,12 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
   Points : 100 à la **première** réussite d'une mission (0 ensuite, anti-« farming ») ; étoiles 3/2/1 selon les indices ;
   `activites.finder.records[mX]` = meilleures étoiles ; maîtrise : 1 réponse par réussite (1 si sans indice).
   Libellés incertains dans `data/libelles-macos.js` (listés dans le README).
+- Détective du Finder (phase 6) : moteur `js/recherche-modele.js` (testé par Node sur 4 dates), écran `js/modules/recherche.js`,
+  données `data/fichiers-virtuels.js` (51 éléments ; `jours` = modifié il y a N jours par rapport au jour de l'élève, ou `date` fixe).
+  Partie A Spotlight (3 étapes) + missions 1-9 (⌘ F : « Ce Mac » / « Documents », lignes critère-opérateur-valeur en ET, ligne
+  incomplète ignorée, majuscules et accents ignorés) + mission 10 photos mystères (panneau « Métadonnées de la photo », choix 1).
+  Réussite = ensemble affiché exactement égal à l'attendu (toute combinaison acceptée). Pas de champ de recherche libre.
+  Mêmes points et étoiles que l'atelier ; `activites.recherche.records[sX]`.
 - Mobile d'abord : 360 px de référence, colonne 480 px max, cibles tactiles ≥ 44 px, champs ≥ 16 px, aucun survol ni glisser-déposer indispensable.
 - Numéro de version affiché en bas de l'accueil et de l'aide : `window.TEXTES.version` dans `data/textes.js` — **le mettre à jour à chaque phase** (l'enseignant s'en sert pour vérifier la mise en ligne).
 
@@ -82,6 +88,8 @@ python3 tests/test_phase3.py           # Playwright : Révision du jour de bout 
 python3 tests/test_phase4.py           # Playwright : Clavier secret et Visite du Mac (parties, erreurs, Spotlight, 4 tailles, file://)
 node tests/test-atelier.js             # Le grand rangement : 9 missions solubles, erreurs typiques refusées, actions
 python3 tests/test_phase5.py           # Playwright : atelier (nouveau dossier, Presque, annuler, décompresser, déplacer, Corbeille, indices, 4 tailles)
+node tests/test-recherche.js           # Détective : jeu discriminant (solutions justes, erreurs typiques refusées, 4 dates), messages
+python3 tests/test_phase6.py           # Playwright : Spotlight, recherche avancée, photos mystères, 4 tailles, file://
 python3 tests/test_bilan_rempli.py     # « Mon bilan » rempli : aucun débordement, ≤ 600 px de haut dès 360 px
 ```
 
@@ -108,8 +116,8 @@ https://makkura9.github.io/mission-finder/tests/relecture.html ; imprimer en PDF
 | 2 Squelette + Quiz express (20 questions pilotes) | ✅ validée (20 questions relues : toutes OK) |
 | 3 Banque QCM (90 questions) + fichier de relecture + Leitner / Révision du jour + bilan compacté | ✅ validée (90 questions relues : toutes OK ; tests sur téléphone OK) |
 | 4 Raccourcis (Clavier secret) + Bureau (Visite du Mac) | ✅ validée (textes relus, tests sur téléphone OK) |
-| 5 Atelier fichiers (Le grand rangement) | livré sur une branche ; **en attente** : relecture (section « Phase 5 » de `tests/relecture.html`), tests sur téléphone et « validé » |
-| 6 Recherche | à faire (créer `data/libelles-macos.js`) |
+| 5 Atelier fichiers (Le grand rangement) | ✅ validée (relecture et tests sur téléphone OK) |
+| 6 Recherche (Détective du Finder) | livrée sur une branche ; **en attente** : relecture (section « Phase 6 » de `tests/relecture.html`), tests sur téléphone et « validé » |
 | 7 Examen blanc, badges, finitions | à faire (examen blanc **sans** chronomètre) |
 | 8 QR code, fiche élève, README final | à faire |
 
@@ -120,7 +128,7 @@ et restent dans la liste « à vérifier » du README ; aucune nouvelle question
 
 1. Libellé « Par galerie » (menu Présentation, macOS 15) — question fin-01.
 2. Menus « Fichier, Édition, Affichage » d'Excel pour Mac — figure de bur-01.
-3. Phase 6 : le lieu de prise de vue d'une photo s'affiche-t-il dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ? Les questions REC4 disent seulement « dans les métadonnées ».
+3. Lieu de prise de vue d'une photo (⌘ I du Finder ou Aperçu ?) : **décidé en phase 6** (choix 1 de l'enseignant) — le site affiche un panneau « Métadonnées de la photo » sans nommer l'outil macOS ; rien n'affirme où le lieu apparaît sur un vrai Mac.
 
 ## 9. Sources du cours (PDF lus en phase 3)
 

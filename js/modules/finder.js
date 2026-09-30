@@ -357,6 +357,7 @@
   function ecranMission(el) { racine = el; rendre(); }
 
   MF.atelier = {
+    apercuSVG: apercuSVG,
     ecranChoix: ecranChoix,
     ecranMission: ecranMission,
     aUneMission: function () { return !!session; },

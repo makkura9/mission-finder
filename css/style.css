@@ -450,6 +450,44 @@ table.fiche td { border-top: 1px solid var(--bordure); padding: 5px 4px; vertica
 .mission-corps .petit { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
 .mission-etat { flex: none; }
 
+/* ---------- Détective du Finder ---------- */
+.rs-fenetre { padding-bottom: 8px; }
+.rs-portee { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; background: var(--principal-doux); border-bottom: 1px solid var(--bordure); font-weight: 700; font-size: 0.9rem; }
+.rs-choix { min-height: 44px; min-width: 44px; padding: 0 12px; border: 2px solid var(--principal); border-radius: 999px; background: var(--carte); color: var(--principal); font: inherit; font-weight: 700; cursor: pointer; }
+.rs-choix[aria-pressed="true"] { background: var(--principal); color: var(--sur-principal); }
+.rs-lignes { list-style: none; margin: 0; padding: 0 8px; }
+.rs-ligne { padding: 8px 0; border-bottom: 1px solid var(--bordure); }
+.rs-ligne-haut, .rs-ligne-bas { display: flex; gap: 6px; align-items: center; }
+.rs-ligne-bas { margin-top: 6px; flex-wrap: wrap; }
+.rs-ligne-date .rs-ligne-bas select[data-champ="operateur"] { flex-basis: 100%; }
+.rs-ligne .champ { min-width: 0; flex: 1 1 0; padding: 8px 10px; }
+.rs-ligne select.champ { background: var(--carte); color: var(--texte); }
+.rs-nombre { flex: 0 1 90px !important; }
+.rs-moins { width: 44px; height: 44px; flex: none; border: 2px solid var(--faux); border-radius: 50%; background: transparent; color: var(--faux); font: inherit; font-size: 1.4rem; font-weight: 800; line-height: 1; cursor: pointer; }
+.rs-incomplete { margin: 4px 0 0; }
+.rs-plus { margin: 8px 8px 0; width: calc(100% - 16px); }
+.rs-resultats { margin: 8px 8px 0; }
+.rs-compte { font-weight: 800; margin: 0 0 4px; }
+.rs-liste { list-style: none; margin: 0; padding: 0; }
+.rs-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; border-top: 1px solid var(--bordure); }
+.rs-texte { display: flex; flex-direction: column; min-width: 0; }
+.rs-texte b { font-weight: 600; overflow-wrap: anywhere; }
+.rs-texte small { font-size: 0.75rem; color: var(--texte-2); overflow-wrap: anywhere; }
+.rs-etapes { margin: 12px 0 0; padding-left: 22px; }
+.rs-etapes li { margin-bottom: 6px; }
+.rs-etapes .est-fait { color: var(--juste); font-weight: 600; }
+.rs-etapes .est-actuel { font-weight: 800; }
+.rs-spotlight { margin-top: 10px; border: 1px solid var(--bordure-forte); border-radius: 12px; background: var(--carte); overflow: hidden; }
+.rs-spotlight .mac-champ { color: var(--texte); border-bottom-color: var(--bordure); }
+.rs-spotlight .mac-champ input { color: var(--texte); }
+.rs-spotlight .rs-liste { padding: 4px; }
+.rs-attente { display: flex; align-items: center; justify-content: center; font-size: 0.9rem; color: var(--texte-2); text-align: center; }
+.rs-photos { list-style: none; margin: 0; padding: 0; }
+.rs-photo .fx-apercu { max-height: 150px; }
+.rs-photo-nom { margin: 0; overflow-wrap: anywhere; }
+.rs-photo .feuille-rangee { flex-wrap: wrap; margin-top: 8px; }
+.rs-photo .feuille-rangee .btn { flex: 1 1 110px; padding: 10px 8px; }
+
 /* ---------- Résultat ---------- */
 .carte-resultat { text-align: center; }
 .resultat-etoiles { margin: 4px 0; }
