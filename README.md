@@ -6,7 +6,7 @@ Site de révision pour smartphone : fichiers et dossiers sous macOS (préparatio
 - Aucune donnée n'est envoyée : pas de compte, pas de statistiques, pas de ressource externe.
 - La progression des élèves reste uniquement dans le navigateur de leur téléphone.
 
-**État actuel : phase 5 — Quiz express (90 questions), Révision du jour, Clavier secret, Visite du Mac, Le grand rangement (9 missions sur un Finder simulé), Mon bilan, Profil, Aide.**
+**État actuel : phase 6 — les 5 activités : Quiz express (90 questions) et Révision du jour, Clavier secret, Visite du Mac, Le grand rangement, Détective du Finder (Spotlight, recherche avancée, photos mystères) ; Mon bilan, Profil, Aide.**
 
 ---
 
@@ -65,16 +65,19 @@ js/progression.js        points, niveaux, étoiles, maîtrise, records
 js/leitner.js            répétition espacée (boîtes de Leitner), Révision du jour
 js/partie.js             règles communes des parties (points, série, étoiles, écran de résultat)
 js/atelier-modele.js     Finder simulé : dossiers, actions, vérification des 9 missions
+js/recherche-modele.js   recherche simulée : critères, dates relatives, vérification des missions
 js/figures.js            illustrations des questions (barre des menus, Dock, fichier, Finder)
 js/modules/qcm.js        Quiz express
 js/modules/raccourcis.js Clavier secret (clavier virtuel)
 js/modules/bureau.js     Visite du Mac (Bureau simulé, Spotlight)
 js/modules/finder.js     Le grand rangement (écran du Finder simulé, missions)
+js/modules/recherche.js  Détective du Finder (Spotlight, recherche avancée, photos mystères)
 js/app.js                navigation, accueil, bilan, profil, aide
 data/questions.js        banque de questions (modifiable)
 data/raccourcis.js       les 20 raccourcis de la fiche (Clavier secret)
 data/bureau.js           légende du Bureau, applications du Dock, résultats Spotlight (Visite du Mac)
 data/missions-finder.js  les 9 missions, les fichiers fictifs de l'exercice 1, les mots reconnus (Le grand rangement)
+data/fichiers-virtuels.js les fichiers fictifs et les missions de recherche (exercices 4 et 5)
 data/libelles-macos.js   libellés inspirés de macOS à vérifier sur un Mac du gymnase
 data/objectifs.js        objectifs d'apprentissage
 data/niveaux.js          niveaux et seuils de points
@@ -111,7 +114,9 @@ Ouvrir `data/questions.js` sur github.com, cliquer l'icône crayon, modifier le 
 | « Placer dans la Corbeille » | Le grand rangement (`data/libelles-macos.js`) | « Corbeille » avec ou sans majuscule dans le menu du Finder ? |
 | « dossier sans titre » | Le grand rangement | Nom exact d'un nouveau dossier ? |
 | Types « Document PDF », « Image JPEG », « Image PNG », « Archive ZIP », « Page web (HTML) » | « Lire les informations » de l'atelier | Libellés exacts du champ « Type » ? |
-| Lieu de prise de vue d'une photo | phase 6 (mission « photos mystères ») | Visible dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ? Aucune question ne l'affirme pour l'instant. |
+| Lieu de prise de vue d'une photo | mission « photos mystères » | Décidé (choix 1) : panneau « Métadonnées de la photo », sans nommer l'outil de macOS |
+| Recherche avancée : « Rechercher : », « Ce Mac », opérateurs (« dans les derniers », « avant le », « est supérieur à »…) | Détective du Finder (`data/libelles-macos.js`) | Libellés exacts dans macOS 15 ? |
+| Critère « Type » : un PDF compte-t-il aussi comme « Document » ? | Détective du Finder | Dans le site : non (une seule catégorie par fichier) |
 
 ### Points à vérifier sur un téléphone
 

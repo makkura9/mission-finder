@@ -5,10 +5,10 @@ const path = require('path');
 const SITE = path.join(__dirname, '..');
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['data/objectifs.js', 'data/niveaux.js', 'data/textes.js', 'data/questions.js', 'data/raccourcis.js', 'data/bureau.js', 'data/missions-finder.js', 'data/libelles-macos.js']) {
+for (const f of ['data/objectifs.js', 'data/niveaux.js', 'data/textes.js', 'data/questions.js', 'data/raccourcis.js', 'data/bureau.js', 'data/missions-finder.js', 'data/libelles-macos.js', 'data/fichiers-virtuels.js']) {
   vm.runInContext(fs.readFileSync(path.join(SITE, f), 'utf8'), ctx, { filename: f });
 }
-const { OBJECTIFS, NIVEAUX, TEXTES, QUESTIONS, RACCOURCIS: FICHE, BUREAU, ATELIER, LIBELLES_MACOS } = ctx.window;
+const { OBJECTIFS, NIVEAUX, TEXTES, QUESTIONS, RACCOURCIS: FICHE, BUREAU, ATELIER, LIBELLES_MACOS, RECHERCHE } = ctx.window;
 const erreurs = [];
 const codes = new Set(OBJECTIFS.liste.map(o => o.code));
 const themes = new Set(OBJECTIFS.themes.map(t => t.code));
@@ -145,6 +145,24 @@ if (JSON.stringify(ATELIER).includes('2025_2026')) erreurs.push('missions-finder
 for (const c of ['nouveauDossier', 'renommer', 'deplacer', 'copier', 'compresser', 'decompresser', 'corbeille', 'informations', 'annuler']) {
   if (!LIBELLES_MACOS.actions[c]) erreurs.push(`libelles-macos.js : action ${c} manquante`);
 }
+// Détective du Finder (data/fichiers-virtuels.js)
+const LR = LIBELLES_MACOS.recherche, idsRech = new Set();
+RECHERCHE.elements.forEach(e => {
+  if (idsRech.has(e.id)) erreurs.push(`fichiers-virtuels.js : id ${e.id} en double`); idsRech.add(e.id);
+  if (!LR.valeursType.includes(e.type)) erreurs.push(`fichiers-virtuels.js : ${e.id}, type « ${e.type} » absent de la liste des valeurs`);
+  if ((e.jours === undefined) === (e.date === undefined)) erreurs.push(`fichiers-virtuels.js : ${e.id}, il faut « jours » OU « date »`);
+  if (e.type === 'PDF' && typeof e.pages !== 'number') erreurs.push(`fichiers-virtuels.js : ${e.id}, PDF sans nombre de pages`);
+  if (e.apercu && !e.lieu) erreurs.push(`fichiers-virtuels.js : ${e.id}, photo sans lieu`);
+});
+RECHERCHE.spotlight.forEach(s => { if (!idsRech.has(s.id)) erreurs.push(`fichiers-virtuels.js : Spotlight, élément ${s.id} inconnu`); });
+RECHERCHE.missions.forEach(m => {
+  if (!codes.has(m.objectif)) erreurs.push(`fichiers-virtuels.js : ${m.id}, objectif inconnu`);
+  if (!Array.isArray(m.indices) || m.indices.length !== 2) erreurs.push(`fichiers-virtuels.js : ${m.id}, il faut 2 indices`);
+  (m.solutions || []).concat(m.erreurs || []).forEach(sol => sol.forEach(l => {
+    if (!LR.criteres.includes(l.critere) || !LR.operateurs[l.critere].includes(l.operateur)) erreurs.push(`fichiers-virtuels.js : ${m.id}, ligne « ${l.critere} ${l.operateur} » hors libellés`);
+  }));
+});
+if (JSON.stringify(LR.criteres) !== JSON.stringify(['Type', 'Nom', 'Contenu', 'Date de modification', 'Auteur', 'Extension', 'Nombre de pages'])) erreurs.push('libelles-macos.js : liste fermée des critères modifiée');
 console.log(`Clavier secret : ${FICHE.length} raccourcis — Visite du Mac : ${BUREAU.elements.length} éléments, ${BUREAU.applications.length} applications`);
 if (erreurs.length) { console.log('ÉCHEC :\n - ' + erreurs.join('\n - ')); process.exit(1); }
 console.log('Données valides : OK');

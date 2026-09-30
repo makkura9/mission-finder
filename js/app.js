@@ -12,7 +12,7 @@
     { id: 'raccourcis', nom: 'Clavier secret', sous: 'Raccourcis clavier', icone: 'clavier', route: '#/clavier', actif: true, theme: 'RAC' },
     { id: 'bureau', nom: 'Visite du Mac', sous: 'Le Bureau de macOS', icone: 'ecran', route: '#/bureau', actif: true, theme: 'BUR' },
     { id: 'finder', nom: 'Le grand rangement', sous: 'Atelier fichiers et dossiers', icone: 'dossier', route: '#/atelier', actif: true, theme: 'FIN' },
-    { id: 'recherche', nom: 'Détective du Finder', sous: 'Spotlight et recherche avancée', icone: 'loupe', actif: false }
+    { id: 'recherche', nom: 'Détective du Finder', sous: 'Spotlight et recherche avancée', icone: 'loupe', route: '#/recherche', actif: true, theme: 'REC' }
   ];
 
   function etat() { return MF.stockage.etat(); }
@@ -270,6 +270,8 @@
     'bureau/resultat': { f: function (el) { MF.bureau.ecranResultat(el); }, titre: 'Résultat', nav: 'accueil' },
     'atelier': { f: function (el) { MF.atelier.ecranChoix(el); }, titre: 'Le grand rangement', nav: 'accueil' },
     'atelier/mission': { f: function (el) { MF.atelier.ecranMission(el); }, titre: 'Le grand rangement', jeu: true },
+    'recherche': { f: function (el) { MF.recherche.ecranChoix(el); }, titre: 'Détective du Finder', nav: 'accueil' },
+    'recherche/mission': { f: function (el) { MF.recherche.ecranMission(el); }, titre: 'Détective du Finder', jeu: true },
     'bilan': { f: ecranBilan, titre: 'Mon bilan', nav: 'bilan' },
     'profil': { f: ecranProfil, titre: 'Profil', nav: 'profil' },
     'aide': { f: ecranAide, titre: 'Aide', nav: 'aide' }
@@ -286,6 +288,7 @@
     if (cle === 'bureau/partie' && !MF.bureau.aUnePartie()) { ui.remplacer('#/bureau'); return; }
     if (cle === 'bureau/resultat' && !MF.bureau.aUnResultat()) { ui.remplacer('#/bureau'); return; }
     if (cle === 'atelier/mission' && !MF.atelier.aUneMission()) { ui.remplacer('#/atelier'); return; }
+    if (cle === 'recherche/mission' && !MF.recherche.aUneMission()) { ui.remplacer('#/recherche'); return; }
 
     var app = document.getElementById('app');
     document.body.classList.toggle('en-jeu', !!r.jeu);
