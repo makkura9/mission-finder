@@ -3,41 +3,60 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Mission Finder — site en construction</title>
-  <meta name="description" content="Révision du TE1 : fichiers et dossiers sous macOS. Site en construction.">
+  <title>Mission Finder</title>
+  <meta name="description" content="Révision du TE1 : fichiers et dossiers sous macOS.">
   <meta name="theme-color" content="#F7F5F1" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0F1514" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-title" content="Mission Finder">
   <link rel="icon" href="img/icone.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
   <link rel="stylesheet" href="css/style.css">
+  <script>
+    /* Le manifeste (ajout à l'écran d'accueil) n'est déclaré qu'en ligne :
+       ouvert par double-clic (file://), le navigateur refuserait de le lire. */
+    if (location.protocol === 'https:' || location.protocol === 'http:') {
+      var lienManifeste = document.createElement('link');
+      lienManifeste.rel = 'manifest';
+      lienManifeste.href = 'manifest.webmanifest';
+      document.head.appendChild(lienManifeste);
+    }
+  </script>
 </head>
 <body>
-  <main class="page">
-    <header class="entete">
-      <img class="logo" src="img/icone.svg" alt="" width="64" height="64">
-      <h1>Mission Finder</h1>
-      <p class="sous-titre">Révision du TE1 : fichiers et dossiers sous macOS</p>
-    </header>
+  <div id="bandeau-stockage" class="bandeau" role="status" hidden></div>
 
-    <section class="carte carte-principale" aria-labelledby="titre-construction">
-      <h2 id="titre-construction">Site en construction</h2>
-      <p>Les activités de révision arriveront prochainement. Revenez bientôt&nbsp;!</p>
-    </section>
+  <main id="app"></main>
 
-    <section class="carte" aria-labelledby="titre-bientot">
-      <h2 id="titre-bientot" class="titre-section">Bientôt disponible</h2>
-      <ul class="liste-activites">
-        <li><b>Quiz express</b><span>Questions à choix sur tout le programme</span></li>
-        <li><b>Clavier secret</b><span>Les raccourcis clavier du Mac</span></li>
-        <li><b>Visite du Mac</b><span>Les éléments du Bureau de macOS</span></li>
-        <li><b>Le grand rangement</b><span>Créer, déplacer, renommer, compresser</span></li>
-        <li><b>Détective du Finder</b><span>Spotlight et recherche avancée</span></li>
-      </ul>
-    </section>
+  <nav id="nav" class="nav" aria-label="Navigation principale">
+    <a href="#/accueil" data-nav="accueil">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M4 11l8-7 8 7v9h-5v-6H9v6H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+      <span>Accueil</span>
+    </a>
+    <a href="#/bilan" data-nav="bilan">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><path d="M5 20V10M12 20V4M19 20v-7" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+      <span>Mon bilan</span>
+    </a>
+    <a href="#/profil" data-nav="profil">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="12" cy="8" r="4" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M4 21c1-4.5 4.5-6.5 8-6.5s7 2 8 6.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+      <span>Profil</span>
+    </a>
+    <a href="#/aide" data-nav="aide">
+      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M9.5 9.5a2.5 2.5 0 114 2c-1 .7-1.5 1.2-1.5 2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/></svg>
+      <span>Aide</span>
+    </a>
+  </nav>
 
-    <footer class="pied">
-      <p>Aucune donnée n'est envoyée&nbsp;: votre progression restera uniquement sur votre téléphone.</p>
-      <p class="version">Version&nbsp;: phase 1 · 29.09.2026</p>
-    </footer>
-  </main>
+  <noscript><p class="page">Ce site a besoin de JavaScript. Activez-le dans les réglages de votre navigateur.</p></noscript>
+
+  <script src="data/objectifs.js"></script>
+  <script src="data/niveaux.js"></script>
+  <script src="data/textes.js"></script>
+  <script src="data/questions.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/progression.js"></script>
+  <script src="js/figures.js"></script>
+  <script src="js/modules/qcm.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

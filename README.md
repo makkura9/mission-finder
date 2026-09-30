@@ -4,9 +4,9 @@ Site de révision pour smartphone : fichiers et dossiers sous macOS (préparatio
 
 - Site statique (HTML, CSS, JavaScript), hébergé gratuitement par GitHub Pages.
 - Aucune donnée n'est envoyée : pas de compte, pas de statistiques, pas de ressource externe.
-- La progression des élèves (à partir de la phase 2) reste uniquement dans le navigateur de leur téléphone.
+- La progression des élèves reste uniquement dans le navigateur de leur téléphone.
 
-**État actuel : phase 1 — page « En construction ».**
+**État actuel : phase 2 — accueil, Quiz express (20 questions pilotes), Mon bilan, Profil, Aide.**
 
 ---
 
@@ -24,7 +24,7 @@ L'interface de GitHub est en anglais. Les libellés ci-dessous sont ceux connus 
 
 1. Créer un compte sur https://github.com/signup (le nom d'utilisateur apparaîtra dans l'adresse du site).
 2. Créer un dépôt : **+** → **New repository** → nom `mission-finder` → **Public** → activer **Add README** → **Create repository**.
-3. Envoyer les fichiers : **Add file** → **Upload files** → glisser **le contenu** du dossier extrait (pas le dossier lui-même, pas le .zip) → **Commit changes**.
+3. Envoyer les fichiers : **Add file** (si la fenêtre est étroite, ce bouton s'affiche comme un **+** gris à gauche du bouton vert **Code**) → **Upload files** → glisser **le contenu** du dossier extrait (pas le dossier lui-même, pas le .zip) → **Commit changes**.
 4. Activer Pages : **Settings** → **Pages** → **Build and deployment** → Source : **Deploy from a branch** → Branch : **main**, dossier **/ (root)** → **Save**.
 5. Attendre 1 à 3 minutes, recharger la page **Settings → Pages**, puis cliquer **Visit site**.
 
@@ -48,9 +48,44 @@ Adresse du site : `https://<nom-utilisateur>.github.io/mission-finder/`
 ### Structure des fichiers
 
 ```
-index.html          page du site
-.nojekyll           indique à GitHub de publier les fichiers tels quels
-css/style.css       couleurs et mise en page (charte « Léman », modes clair et sombre)
-img/icone.svg       icône du site
-README.md           ce guide
+index.html               page unique du site
+.nojekyll                indique à GitHub de publier les fichiers tels quels
+manifest.webmanifest     ajout à l'écran d'accueil (nom, icônes, couleurs)
+css/style.css            couleurs et mise en page (charte « Léman », modes clair et sombre)
+js/ui.js                 petits outils d'affichage
+js/storage.js            sauvegarde de la progression (localStorage)
+js/progression.js        points, niveaux, étoiles, maîtrise, records
+js/figures.js            illustrations des questions (barre des menus, Dock, fichier)
+js/modules/qcm.js        Quiz express
+js/app.js                navigation, accueil, bilan, profil, aide
+data/questions.js        banque de questions (modifiable)
+data/objectifs.js        objectifs d'apprentissage
+data/niveaux.js          niveaux et seuils de points
+data/textes.js           messages de retour, numéro de version
+img/                     icônes du site
 ```
+
+### Où est enregistrée la progression ?
+
+Dans le `localStorage` du navigateur de l'élève (clé `missionFinder.v1`). Le principe est le même que celui des cookies, mais la capacité est plus grande (environ 5 Mo au lieu de 4 Ko) et rien n'est envoyé au serveur à chaque visite. La progression est donc liée à un téléphone et à un navigateur ; l'onglet **Profil** permet de la transférer par un code.
+
+### Modifier une question
+
+Ouvrir `data/questions.js` sur github.com, cliquer l'icône crayon, modifier le texte entre guillemets, puis **Commit changes**. Le format de chaque champ est expliqué en haut du fichier. Un guide détaillé (avec les erreurs à éviter) sera ajouté en phase 8.
+
+### Points à vérifier sur un Mac du gymnase
+
+| Élément | Où il apparaît | Question |
+|---|---|---|
+| « Par galerie » | question fin-01 | Libellé exact du menu Présentation dans macOS 15 ? |
+| Menus « Fichier, Édition, Affichage » d'Excel | figure de la question bur-01 | Libellés exacts dans Excel pour Mac ? |
+| Menu Pomme | figures | Représenté par une pomme stylisée générique (pas le logo Apple) : choix à valider |
+| Lieu de prise de vue d'une photo | phase 6 (mission « photos mystères ») | Visible dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ? |
+
+### Points à vérifier sur un téléphone
+
+| Élément | Question |
+|---|---|
+| iPhone : « Sur l'écran d'accueil » / « Ajouter à l'écran d'accueil » | Libellé exact dans votre version d'iOS ? |
+| iPhone : progression de l'icône séparée de celle de Safari | À confirmer sur un iPhone |
+| Android : « Ajouter à l'écran d'accueil » / « Installer l'application » | Libellé exact dans Chrome ? |
