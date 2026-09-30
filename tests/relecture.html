@@ -44,6 +44,11 @@
   .fig-laterale { max-width: 45mm; padding: 2px 4px; background: #f3f3f3; }
   .fig-laterale ul { list-style: none; margin: 0; padding: 0; }
   .fig-section { margin: 2px 0 0; font-weight: 700; color: #666; font-size: 7pt; }
+  h2 { font-size: 11pt; margin: 5mm 0 2mm; break-after: avoid; }
+  table.relire { width: 100%; border-collapse: collapse; font-size: 8pt; margin-bottom: 3mm; }
+  table.relire th, table.relire td { border: 1px solid #999; padding: 1mm 1.5mm; text-align: left; vertical-align: top; }
+  table.relire th { background: #eee; }
+  table.relire tr { break-inside: avoid; }
   .badge { font-weight: 700; padding: 0 1.5mm; border-radius: 2px; }
   .badge-nouvelle { background: #FCE8E6; color: #8A1C14; }
   .badge-validee { background: #E6F4EA; color: #1A7536; }
@@ -57,20 +62,34 @@
 <p class="intro" id="intro"></p>
 <p class="commandes"><label><input type="checkbox" id="voir-validees"> Afficher aussi les questions déjà validées (phase 2)</label></p>
 <div id="liste"></div>
+<div id="phase4"></div>
 <script src="../data/objectifs.js"></script>
 <script src="../data/questions.js"></script>
+<script src="../data/raccourcis.js"></script>
+<script src="../data/bureau.js"></script>
 <script src="../js/ui.js"></script>
 <script src="../js/figures.js"></script>
 <script>
   const esc = MF.ui.esc;
   const TYPES = { unique: 'Choix unique', multiple: 'Choix multiple', vraifaux: 'Vrai ou faux', ranger: 'Où ranger ?' };
-  // Questions relues et validées par l'enseignant (phase 2, 30.09.2026).
-  const VALIDEES = ['bur-01', 'bur-02', 'bur-03', 'fin-01', 'fin-02', 'fin-03', 'fin-04', 'fin-05', 'fin-06', 'fin-07',
-    'typ-01', 'typ-02', 'typ-03', 'typ-04', 'rac-01', 'rac-02', 'rac-03', 'rec-01', 'rec-02', 'rec-03'];
+  // Questions relues et validées par l'enseignant (phases 2 et 3, 30.09.2026).
+  const VALIDEES = [
+    'bur-01', 'bur-02', 'bur-03', 'bur-04', 'bur-05', 'bur-06', 'bur-07', 'bur-08', 'bur-09', 'bur-10',
+    'bur-11', 'fin-01', 'fin-02', 'fin-03', 'fin-04', 'fin-05', 'fin-06', 'fin-07', 'fin-08', 'fin-09',
+    'fin-10', 'fin-11', 'fin-12', 'fin-13', 'fin-14', 'fin-15', 'fin-16', 'fin-17', 'fin-18', 'fin-19',
+    'fin-20', 'fin-21', 'fin-22', 'fin-23', 'fin-24', 'fin-25', 'fin-26', 'typ-01', 'typ-02', 'typ-03',
+    'typ-04', 'typ-05', 'typ-06', 'typ-07', 'typ-08', 'typ-09', 'typ-10', 'typ-11', 'typ-12', 'typ-13',
+    'typ-14', 'typ-15', 'typ-16', 'rac-01', 'rac-02', 'rac-03', 'rac-04', 'rac-05', 'rac-06', 'rac-07',
+    'rac-08', 'rac-09', 'rac-10', 'rac-11', 'rac-12', 'rac-13', 'rac-14', 'rac-15', 'rac-16', 'rac-17',
+    'rac-18', 'rac-19', 'rac-20', 'rec-01', 'rec-02', 'rec-03', 'rec-04', 'rec-05', 'rec-06', 'rec-07',
+    'rec-08', 'rec-09', 'rec-10', 'rec-11', 'rec-12', 'rec-13', 'rec-14', 'rec-15', 'rec-16', 'rec-17'
+  ];
   const nouvelles = QUESTIONS.filter(q => !VALIDEES.includes(q.id)).length;
-  document.getElementById('intro').textContent =
-    QUESTIONS.length + ' questions, dont ' + nouvelles + ' à relire (badge « À relire »). Bonne(s) réponse(s) en vert (✓). ' +
-    'Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. Cochez « OK » ou notez la correction (identifiant de la question + texte corrigé).';
+  document.getElementById('intro').textContent = (nouvelles
+    ? QUESTIONS.length + ' questions, dont ' + nouvelles + ' à relire (badge « À relire »). Bonne(s) réponse(s) en vert (✓). ' +
+      'Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. Cochez « OK » ou notez la correction (identifiant de la question + texte corrigé).'
+    : 'Les ' + QUESTIONS.length + ' questions du Quiz express sont validées (cochez la case pour les afficher). ') +
+    ' À relire en phase 4 : les textes de « Visite du Mac » et de « Clavier secret », ci-dessous.';
   function afficher() {
   const voirValidees = document.getElementById('voir-validees').checked;
   let h = '';
@@ -94,6 +113,36 @@
   }
   document.getElementById('voir-validees').addEventListener('change', afficher);
   afficher();
+
+  // Phase 4 : textes des modules « Visite du Mac » et « Clavier secret »
+  (function () {
+    let h = '<h2>Visite du Mac — légende du Bureau (tutoriel, p. 1) <span class="badge badge-nouvelle">À relire</span></h2>' +
+      '<table class="relire"><thead><tr><th>Légende</th><th>Consigne « Touchez… »</th><th>Si l\'élève le touche par erreur : « Vous avez touché… »</th><th>Rappel de position (si confondu)</th><th>Explication</th></tr></thead><tbody>';
+    BUREAU.elements.forEach(e => {
+      h += '<tr><td><b>' + esc(e.lettre) + '. ' + esc(e.nom) + '</b></td><td>' + esc(e.consigne) + '</td><td>' + esc(e.touche) + '</td><td>' + esc(e.ou) + '</td><td>' + esc(e.explication) + '</td></tr>';
+    });
+    h += '</tbody></table>' +
+      '<table class="relire"><tbody>' +
+      '<tr><th>Applications du Dock simulé</th><td>' + BUREAU.applications.map(a => esc(a.nom) + ' (' + esc(a.abr) + ')').join(', ') + ' — le Finder est toujours présent et ouvert ; 3 autres sont tirées au hasard.</td></tr>' +
+      '<tr><th>Menus affichés</th><td>Finder actif : ' + BUREAU.menusFinder.map(esc).join(', ') + ' (capture du tutoriel) ; autre application : ' + BUREAU.menusAutres.map(esc).join(', ') + '.</td></tr>' +
+      '<tr><th>Application active (2 étapes)</th><td>« Quelle est l\'application active ? » — Explication : « L\'application active est celle dont le nom apparaît en gras à côté du menu Pomme : ici, … » — Erreurs : « « X » est ouverte (point sous son icône), mais son nom n\'est pas en gras dans la barre des menus. » ou « « X » n\'est pas ouverte : pas de point sous son icône. »</td></tr>' +
+      '<tr><th>Applications ouvertes (2 étapes)</th><td>« Touchez toutes les applications ouvertes, puis « Valider ». » — Explication : « Un petit point sous l\'icône indique qu\'une application est ouverte : ici, … » — Erreurs : « Il manque N application(s) ouverte(s). », « « X » n\'est pas ouverte : pas de point sous son icône. »</td></tr>' +
+      '<tr><th>Spotlight (1 étape)</th><td>« Avec Spotlight, ouvrez le Finder. » — L\'élève touche la loupe, écrit, puis touche un résultat parmi : ' +
+      BUREAU.spotlight.resultats.map(x => esc(x.nom) + ' (' + esc(x.genre) + ')').join(', ') +
+      '. — Explication : « Spotlight s\'ouvre avec la loupe en haut à droite de l\'écran (ou ⌘ Espace) : écrivez « Finder », puis touchez l\'application dans les résultats. » — Réussite : « Le Finder est maintenant l\'application active : son nom apparaît en gras dans la barre des menus. » — S\'il touche le Finder dans le Dock : « Le Finder s\'ouvrirait aussi depuis le Dock, mais ici, utilisez Spotlight. »</td></tr>' +
+      '</tbody></table>';
+    h += '<h2>Clavier secret — les 20 raccourcis (fiche, formulation exacte) <span class="badge badge-nouvelle">À relire</span></h2>' +
+      '<table class="relire"><thead><tr><th>Raccourci</th><th>Texte affiché</th><th>Souvent confondu avec (distracteurs)</th></tr></thead><tbody>';
+    const combi = r => r.touches.join(' ') + (r.puis ? ' puis ' + r.puis : '');
+    RACCOURCIS.forEach(r => {
+      h += '<tr><td><b>' + esc(combi(r)) + '</b></td><td>' + esc(r.action + (r.precision ? ' (' + r.precision + ')' : '')) + '</td><td>' +
+        r.proches.map(id => esc(combi(RACCOURCIS.find(x => x.id === id)))).join(', ') + '</td></tr>';
+    });
+    h += '</tbody></table><p class="src">Messages après une combinaison fausse : « Vous avez composé … : « texte de la fiche ». », puis un indice : « Tous les raccourcis de la fiche commencent par ⌘. », ' +
+      '« La touche finale est juste ; vérifiez les touches de modification (⌘, ⇧, ⌥). », « Les touches de modification sont justes ; changez la touche finale. », ' +
+      '« Presque : cette capture se fait en deux temps. » ; si l\'élève compose ⌘ Espace : « cette combinaison ouvre Spotlight ».</p>';
+    document.getElementById('phase4').innerHTML = h;
+  })();
 </script>
 </body>
 </html>

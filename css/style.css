@@ -298,6 +298,97 @@ a.carte-activite:active { background: var(--principal-doux); }
 .fig-laterale ul { list-style: none; margin: 0; padding: 0; }
 .fig-section { margin: 4px 4px 2px; font-size: 11px; font-weight: 700; color: #6E6E73; }
 
+/* ---------- Barre d'action à deux boutons (Effacer + Valider) ---------- */
+.barre-action-rangee { display: flex; gap: 8px; max-width: 448px; margin: 0 auto; }
+.barre-action-rangee .btn { flex: 1 1 0; margin: 0; }
+.barre-action-rangee .btn-bloc { flex-grow: 2; }
+
+/* ---------- Clavier secret ---------- */
+.q-action { font-size: 1.05rem; font-weight: 600; margin: -4px 0 10px; }
+kbd {
+  display: inline-flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 36px; min-height: 36px; padding: 2px 8px; margin: 2px 0;
+  border: 1px solid var(--bordure-forte); border-bottom-width: 3px; border-radius: 7px;
+  background: var(--carte); color: var(--texte); font: inherit; font-weight: 700; line-height: 1.1; vertical-align: middle;
+}
+kbd small { font-size: 0.62rem; font-weight: 600; color: var(--texte-2); }
+.puis { font-size: 0.9rem; color: var(--texte-2); }
+.touches-grandes { font-size: 1.3rem; margin: 6px 0 4px; }
+.touches-grandes kbd { min-width: 48px; min-height: 48px; }
+.saisie { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 54px; padding: 6px 10px; margin-top: 4px; border: 2px dashed var(--bordure-forte); border-radius: 12px; }
+.saisie-lib { font-size: 0.85rem; font-weight: 600; color: var(--texte-2); }
+.clavier { display: grid; gap: 5px; margin-top: 10px; -webkit-user-select: none; user-select: none; }
+.clavier-rangee { display: grid; grid-template-columns: repeat(6, minmax(44px, 1fr)); gap: 4px; }
+.touche {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 44px; min-height: 48px; padding: 0 2px;
+  border: 1px solid var(--bordure-forte); border-bottom-width: 3px; border-radius: 8px;
+  background: var(--carte); color: var(--texte); font: inherit; font-size: 1.05rem; font-weight: 700; line-height: 1.1; cursor: pointer;
+}
+.touche small { font-size: 0.62rem; font-weight: 600; color: var(--texte-2); }
+.touche-mod { background: var(--principal-doux); }
+.touche-espace { grid-column: span 3; }
+.touche[aria-pressed="true"] { background: var(--principal); border-color: var(--principal); color: var(--sur-principal); border-bottom-width: 1px; transform: translateY(2px); }
+.touche[aria-pressed="true"] small { color: var(--sur-principal); }
+.touche:disabled { cursor: default; opacity: 0.55; }
+table.fiche { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 0.85rem; margin-top: 4px; }
+table.fiche th { text-align: left; font-size: 0.75rem; color: var(--texte-2); padding: 4px; }
+table.fiche th:first-child { width: 34%; }
+table.fiche td { border-top: 1px solid var(--bordure); padding: 5px 4px; vertical-align: top; overflow-wrap: anywhere; }
+
+/* ---------- Visite du Mac : Bureau simulé (couleurs fixes, comme une capture) ---------- */
+.mac { margin: 8px 0 4px; border: 1px solid #9AA0A6; border-radius: 12px; overflow: hidden; color: #1d1d1f; font-size: 13px; -webkit-user-select: none; user-select: none; }
+.mac button { font: inherit; color: inherit; margin: 0; cursor: pointer; }
+.mac button:disabled { cursor: default; }
+.mac-fond { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; }
+.mac-barre { position: relative; display: flex; align-items: center; gap: 10px; height: 45px; padding: 0 0 0 2px; background: #ECECEF; border-bottom: 1px solid #C9C9CE; }
+.mac-barre > *:not(.mac-fond) { position: relative; }
+.mac-pomme, .mac-loupe { width: 44px; height: 44px; flex: none; border: 0; background: transparent; display: flex; align-items: center; justify-content: center; }
+.mac-loupe { margin-left: auto; }
+.mac-nomapp, .mac-menus { pointer-events: none; white-space: nowrap; }
+.mac-nomapp { font-weight: 800; margin-left: -6px; }
+.mac-menus { display: flex; flex-wrap: wrap; column-gap: 10px; row-gap: 30px; height: 18px; line-height: 18px; overflow: hidden; min-width: 0; flex: 1 1 auto; }
+.mac-bureau { position: relative; min-height: 138px; background: linear-gradient(160deg, #6C9CC6 0%, #2F6391 55%, #1B3F63 100%); }
+.mac-bureau.est-spotlight { min-height: 250px; }
+.mac-disque { position: absolute; top: 8px; right: 8px; width: 72px; min-height: 64px; padding: 2px; border: 0; border-radius: 8px; background: transparent; display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.mac-disque span { font-size: 11px; font-weight: 800; color: #FFFFFF; text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8); }
+.mac-dock { position: relative; display: flex; align-items: flex-end; justify-content: center; gap: 2px; padding: 4px 4px 2px; background: #E4E8ED; border-top: 1px solid #B9BEC4; }
+.mac-dock > *:not(.mac-fond) { position: relative; }
+.mac-app, .mac-icone { flex: 0 1 48px; min-width: 44px; min-height: 58px; padding: 2px 0 0; border: 0; border-radius: 8px; background: transparent; display: flex; flex-direction: column; align-items: center; }
+.mac-icone { justify-content: flex-start; padding-top: 4px; }
+.mac-point { width: 5px; height: 5px; border-radius: 50%; margin: 2px 0 1px; }
+.mac-point.est-ouverte { background: #1d1d1f; }
+.mac-app-nom { font-size: 9.5px; line-height: 1.15; color: #1d1d1f; }
+.mac-sep { align-self: stretch; width: 1px; margin: 6px 3px; background: #8C9197; }
+/* Marques : entouré (question), choisi, juste, faux — toujours avec un symbole en plus de la couleur */
+.mac .est-marque-entoure, .mac .est-marque-juste, .mac .est-marque-faux, .mac .est-marque-choisie { outline-offset: 1px; border-radius: 8px; }
+.mac .est-marque-entoure { outline: 3px solid #C03E0A; }
+.mac .est-marque-juste { outline: 3px solid #1A7536; }
+.mac .est-marque-faux { outline: 3px dashed #B3261E; }
+.mac .est-marque-choisie { outline: 3px solid #0A64D6; background: rgba(10, 100, 214, 0.12); }
+.mac-barre.est-marque-entoure, .mac-barre.est-marque-juste, .mac-barre.est-marque-faux,
+.mac-dock.est-marque-entoure, .mac-dock.est-marque-juste, .mac-dock.est-marque-faux { outline-offset: -3px; border-radius: 0; }
+.mac .est-marque-entoure::after, .mac .est-marque-juste::after, .mac .est-marque-faux::after, .mac .est-marque-choisie::after {
+  position: absolute; top: 1px; right: 1px; z-index: 2; width: 18px; height: 18px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #FFFFFF; pointer-events: none;
+}
+.mac .est-marque-entoure::after { content: "?"; background: #C03E0A; }
+.mac .est-marque-juste::after { content: "✓"; background: #1A7536; }
+.mac .est-marque-faux::after { content: "✗"; background: #B3261E; }
+.mac .est-marque-choisie::after { content: "✓"; background: #0A64D6; }
+.mac-spotlight { position: absolute; z-index: 3; top: 8px; left: 8px; right: 8px; background: #FAFAFB; border: 1px solid #B9BEC4; border-radius: 12px; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); overflow: hidden; }
+.mac-champ { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-bottom: 1px solid #DADCE0; }
+.mac-champ input { flex: 1; min-width: 0; min-height: 44px; border: 0; background: transparent; color: #1d1d1f; font: inherit; font-size: 16px; outline: none; }
+.mac-resultats { list-style: none; margin: 0; padding: 4px; max-height: 190px; overflow-y: auto; }
+.mac-resultat { position: relative; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 3px 6px; border: 0; border-radius: 8px; background: transparent; text-align: left; }
+.mac-res-texte { display: flex; flex-direction: column; min-width: 0; }
+.mac-res-texte b { overflow-wrap: anywhere; font-weight: 600; }
+.mac-res-texte small { font-size: 11px; color: #5F6368; }
+.mac-doc svg { display: block; width: 22px; height: 27px; }
+.mac-aucun { padding: 10px; color: #5F6368; }
+.note-simulation { margin-top: 14px; }
+.info { font-size: 0.9rem; padding: 8px 12px; border-radius: 10px; background: var(--principal-doux); margin: 8px 0 0; }
+
 /* ---------- Résultat ---------- */
 .carte-resultat { text-align: center; }
 .resultat-etoiles { margin: 4px 0; }

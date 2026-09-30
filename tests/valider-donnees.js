@@ -5,10 +5,10 @@ const path = require('path');
 const SITE = path.join(__dirname, '..');
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['data/objectifs.js', 'data/niveaux.js', 'data/textes.js', 'data/questions.js']) {
+for (const f of ['data/objectifs.js', 'data/niveaux.js', 'data/textes.js', 'data/questions.js', 'data/raccourcis.js', 'data/bureau.js']) {
   vm.runInContext(fs.readFileSync(path.join(SITE, f), 'utf8'), ctx, { filename: f });
 }
-const { OBJECTIFS, NIVEAUX, TEXTES, QUESTIONS } = ctx.window;
+const { OBJECTIFS, NIVEAUX, TEXTES, QUESTIONS, RACCOURCIS: FICHE, BUREAU } = ctx.window;
 const erreurs = [];
 const codes = new Set(OBJECTIFS.liste.map(o => o.code));
 const themes = new Set(OBJECTIFS.themes.map(t => t.code));
@@ -86,5 +86,41 @@ RACCOURCIS.filter(r => r !== '⌘ Espace').forEach(r => {
   const present = QUESTIONS.some(q => q.objectif === 'RAC' && (q.enonce.includes(r) || q.bonnes.some(b => q.propositions[b] === r)));
   if (!present) erreurs.push(`raccourci ${r} : aucune question RAC`);
 });
+// Clavier secret (data/raccourcis.js) : les 20 raccourcis de la fiche, et eux seuls
+const TOUCHES_FINALES = ['A', 'C', 'F', 'I', 'M', 'N', 'O', 'P', 'Q', 'T', 'V', 'W', 'Z', '3', '4', '5', 'esc', '⇥'];
+const idsFiche = new Set();
+if (FICHE.length !== 20) erreurs.push(`raccourcis.js : ${FICHE.length} raccourcis au lieu de 20`);
+FICHE.forEach(r => {
+  if (idsFiche.has(r.id)) erreurs.push(`raccourcis.js : id ${r.id} en double`); idsFiche.add(r.id);
+  const combi = r.touches.join(' ') + (r.puis ? ' puis ' + r.puis : '');
+  if (!RACCOURCIS.includes(combi)) erreurs.push(`raccourcis.js : ${combi} absent de la fiche`);
+  if (r.touches[0] !== '⌘') erreurs.push(`raccourcis.js : ${r.id} ne commence pas par ⌘`);
+  if (!TOUCHES_FINALES.includes(r.touches[r.touches.length - 1])) erreurs.push(`raccourcis.js : ${r.id}, touche finale absente du clavier virtuel`);
+  if (r.puis && r.puis !== 'Espace') erreurs.push(`raccourcis.js : ${r.id}, « puis » doit valoir Espace`);
+  if (!r.action) erreurs.push(`raccourcis.js : ${r.id} sans action`);
+  if (/⌘\s*Y\b/.test(JSON.stringify(r))) erreurs.push(`raccourcis.js : ⌘ Y est exclu du site`);
+});
+const combis = FICHE.map(r => r.touches.join(' ') + (r.puis ? ' puis ' + r.puis : ''));
+if (new Set(combis).size !== combis.length) erreurs.push('raccourcis.js : combinaison en double');
+const textes = FICHE.map(r => r.action + (r.precision ? ' (' + r.precision + ')' : ''));
+if (new Set(textes).size !== textes.length) erreurs.push('raccourcis.js : deux raccourcis ont le même texte');
+FICHE.forEach(r => (r.proches || []).forEach(p => {
+  if (!idsFiche.has(p) || p === r.id) erreurs.push(`raccourcis.js : ${r.id}, proche « ${p} » invalide`);
+}));
+// Visite du Mac (data/bureau.js) : légende a–f validée en phase 0
+const LEGENDE = { pomme: 'a', barre: 'b', disque: 'c', dock: 'd', depart: 'e', corbeille: 'f' };
+if (BUREAU.elements.length !== 6) erreurs.push('bureau.js : il faut les 6 éléments de la légende');
+BUREAU.elements.forEach(e => {
+  if (LEGENDE[e.id] !== e.lettre) erreurs.push(`bureau.js : ${e.id}, lettre ${e.lettre} (attendu ${LEGENDE[e.id]})`);
+  for (const c of ['nom', 'consigne', 'touche', 'ou', 'explication']) if (!e[c]) erreurs.push(`bureau.js : ${e.id} sans « ${c} »`);
+});
+const noms = BUREAU.applications.map(a => a.nom), abrs = BUREAU.applications.map(a => a.abr);
+if (noms[0] !== 'Finder') erreurs.push('bureau.js : le Finder doit être la première application');
+if (new Set(noms).size !== noms.length || new Set(abrs).size !== abrs.length) erreurs.push('bureau.js : application ou abréviation en double');
+if (BUREAU.applications.length < 4) erreurs.push('bureau.js : au moins 4 applications (Finder + 3)');
+if (JSON.stringify(BUREAU.menusFinder) !== JSON.stringify(['Fichier', 'Édition', 'Présentation', 'Aller', 'Fenêtre', 'Aide'])) erreurs.push('bureau.js : menus du Finder différents de la capture du tutoriel');
+if (!BUREAU.spotlight.resultats.some(x => x.nom === BUREAU.spotlight.cible && x.genre === 'Application')) erreurs.push('bureau.js : la cible Spotlight doit être une application des résultats');
+BUREAU.spotlight.resultats.forEach(x => { if (!['Application', 'Document', 'Dossier'].includes(x.genre)) erreurs.push(`bureau.js : genre inconnu pour ${x.nom}`); });
+console.log(`Clavier secret : ${FICHE.length} raccourcis — Visite du Mac : ${BUREAU.elements.length} éléments, ${BUREAU.applications.length} applications`);
 if (erreurs.length) { console.log('ÉCHEC :\n - ' + erreurs.join('\n - ')); process.exit(1); }
 console.log('Données valides : OK');

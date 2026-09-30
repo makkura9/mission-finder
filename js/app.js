@@ -9,8 +9,8 @@
 
   var ACTIVITES = [
     { id: 'qcm', nom: 'Quiz express', sous: 'Questions à choix · 5 thèmes', icone: 'quiz', route: '#/qcm', actif: true },
-    { id: 'raccourcis', nom: 'Clavier secret', sous: 'Raccourcis clavier', icone: 'clavier', actif: false },
-    { id: 'bureau', nom: 'Visite du Mac', sous: 'Le Bureau de macOS', icone: 'ecran', actif: false },
+    { id: 'raccourcis', nom: 'Clavier secret', sous: 'Raccourcis clavier', icone: 'clavier', route: '#/clavier', actif: true, theme: 'RAC' },
+    { id: 'bureau', nom: 'Visite du Mac', sous: 'Le Bureau de macOS', icone: 'ecran', route: '#/bureau', actif: true, theme: 'BUR' },
     { id: 'finder', nom: 'Le grand rangement', sous: 'Atelier fichiers et dossiers', icone: 'dossier', actif: false },
     { id: 'recherche', nom: 'Détective du Finder', sous: 'Spotlight et recherche avancée', icone: 'loupe', actif: false }
   ];
@@ -61,7 +61,7 @@
       if (!a.actif) info = '<span class="puce puce-bientot">Bientôt disponible</span>';
       else if (!st || !st.parties) info = '<span class="petit">Pas encore joué</span>';
       else {
-        var m = MF.progression.maitriseGlobale();
+        var m = a.theme ? MF.progression.maitriseTheme(a.theme) : MF.progression.maitriseGlobale();
         info = m === null ? '<span class="petit">Maîtrise : à découvrir</span>' : ui.barre(m, 'Maîtrise moyenne');
       }
       var contenu = '<span class="act-icone">' + ui.icone(a.icone) + '</span><span class="act-corps"><span class="act-tete"><b>' + ui.esc(a.nom) + '</b>' +
@@ -262,6 +262,12 @@
     'qcm': { f: function (el) { MF.qcm.ecranChoix(el); }, titre: 'Quiz express', nav: 'accueil' },
     'qcm/partie': { f: function (el) { MF.qcm.ecranPartie(el); }, titre: 'Quiz express', jeu: true },
     'qcm/resultat': { f: function (el) { MF.qcm.ecranResultat(el); }, titre: 'Résultat', nav: 'accueil' },
+    'clavier': { f: function (el) { MF.clavier.ecranChoix(el); }, titre: 'Clavier secret', nav: 'accueil' },
+    'clavier/partie': { f: function (el) { MF.clavier.ecranPartie(el); }, titre: 'Clavier secret', jeu: true },
+    'clavier/resultat': { f: function (el) { MF.clavier.ecranResultat(el); }, titre: 'Résultat', nav: 'accueil' },
+    'bureau': { f: function (el) { MF.bureau.ecranChoix(el); }, titre: 'Visite du Mac', nav: 'accueil' },
+    'bureau/partie': { f: function (el) { MF.bureau.ecranPartie(el); }, titre: 'Visite du Mac', jeu: true },
+    'bureau/resultat': { f: function (el) { MF.bureau.ecranResultat(el); }, titre: 'Résultat', nav: 'accueil' },
     'bilan': { f: ecranBilan, titre: 'Mon bilan', nav: 'bilan' },
     'profil': { f: ecranProfil, titre: 'Profil', nav: 'profil' },
     'aide': { f: ecranAide, titre: 'Aide', nav: 'aide' }
@@ -273,6 +279,10 @@
     if (!r) { ui.remplacer('#/accueil'); return; }
     if (cle === 'qcm/partie' && !MF.qcm.aUnePartie()) { ui.remplacer('#/qcm'); return; }
     if (cle === 'qcm/resultat' && !MF.qcm.aUnResultat()) { ui.remplacer('#/qcm'); return; }
+    if (cle === 'clavier/partie' && !MF.clavier.aUnePartie()) { ui.remplacer('#/clavier'); return; }
+    if (cle === 'clavier/resultat' && !MF.clavier.aUnResultat()) { ui.remplacer('#/clavier'); return; }
+    if (cle === 'bureau/partie' && !MF.bureau.aUnePartie()) { ui.remplacer('#/bureau'); return; }
+    if (cle === 'bureau/resultat' && !MF.bureau.aUnResultat()) { ui.remplacer('#/bureau'); return; }
 
     var app = document.getElementById('app');
     document.body.classList.toggle('en-jeu', !!r.jeu);

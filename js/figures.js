@@ -129,6 +129,8 @@
   MF.figures = {
     esc: esc,
     iconeFichier: iconeFichier,
+    mini: mini,
+    POMME: POMME,
     TYPES: ['barreMenus', 'dock', 'fichier', 'colonnes', 'barreLaterale'],
     rendre: function (f) {
       if (!f) return '';

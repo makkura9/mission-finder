@@ -46,16 +46,21 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 ## 4. Architecture et conventions techniques
 
 - HTML + CSS + JavaScript « vanilla », **sans module ES** (`<script type="module">` est bloqué en `file://`), sans framework, sans compilation, sans `npm` pour le site, **sans aucune ressource externe** (CDN, polices web, analytics).
-- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.leitner`, `MF.figures`, `MF.qcm`).
-- Données dans `data/*.js` (`window.QUESTIONS`, `window.OBJECTIFS`, `window.NIVEAUX`, `window.TEXTES`), **jamais** de `fetch` de JSON : le site doit marcher ouvert par double-clic.
+- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.leitner`, `MF.figures`, `MF.partie`, `MF.qcm`, `MF.clavier`, `MF.bureau`).
+- Données dans `data/*.js` (`window.QUESTIONS`, `window.OBJECTIFS`, `window.NIVEAUX`, `window.TEXTES`, `window.RACCOURCIS`, `window.BUREAU`), **jamais** de `fetch` de JSON : le site doit marcher ouvert par double-clic.
 - **Chemins relatifs uniquement** (`css/style.css`, jamais `/css/…`).
-- Navigation par ancre : `#/accueil`, `#/qcm`, `#/qcm/partie`, `#/qcm/resultat`, `#/bilan`, `#/profil`, `#/aide` (routeur dans `js/app.js`).
+- Navigation par ancre : `#/accueil`, `#/qcm`, `#/qcm/partie`, `#/qcm/resultat`, `#/clavier`, `#/clavier/partie`, `#/clavier/resultat`, `#/bureau`, `#/bureau/partie`, `#/bureau/resultat`, `#/bilan`, `#/profil`, `#/aide` (routeur dans `js/app.js`).
 - Le manifeste n'est déclaré qu'en `http(s)` (petit script dans `<head>`) pour éviter une erreur console en `file://`.
 - Sauvegarde : `localStorage`, clé unique `missionFinder.v1`, objet avec `app` et `version` (migrations dans `js/storage.js`) ; toute lecture/écriture en `try/catch` ; repli en mémoire + bandeau si stockage indisponible ; export/import par code `MF1-` + base64 (UTF-8).
 - Score : 10 points du premier coup, 5 au 2e essai, 0 ensuite ; bonus de série +2 par réponse juste **du premier coup** consécutive (dès la 2e), +10 max par partie ; étoiles sur points de base / (10 × n) : ★ ≥ 50 %, ★★ ≥ 75 %, ★★★ = 100 % ; missions (phases 5-6) : 100 points, ★★★ sans indice, ★★ avec indice, ★ avec le dernier indice. Maîtrise d'un objectif : % de justes du premier coup sur les 10 dernières réponses, « à découvrir » sous 3 réponses ; maîtrise d'un thème = moyenne des objectifs évalués. Niveaux dans `data/niveaux.js`.
 - QCM : 1re erreur → réponse marquée ✗ + explication ciblée (`erreurs[i]`), bonne réponse **non** révélée, 2e essai ; vrai/faux : un seul essai ; ensuite bonne réponse + explication. Les points sont ajoutés à chaque réponse (rien n'est perdu si l'élève quitte).
 - Illustrations : recréations vectorielles simplifiées (`js/figures.js` : `barreMenus`, `dock`, `fichier`, `colonnes`, `barreLaterale`), aucun logo : menu Pomme = pomme générique, applications = carrés de couleur avec abréviation.
 - Révision du jour : pas de nouvelle route ; `MF.qcm.demarrer('revision')` lance une partie du Quiz express en mode « revision ».
+- Clavier secret et Visite du Mac (phase 4) : moteur commun `js/partie.js` (mêmes points, série, étoiles que le QCM ; 2 essais par étape).
+  Clavier secret : 10 raccourcis par partie (6 à composer, 4 « Que fait… ? »), clavier virtuel à touches utiles en ordre alphabétique
+  (⌘ ⇧ ⌥ restent enfoncés ; « puis Espace » en touchant Espace après la touche finale), suivi `etat.questions['clav-<id>']`
+  (sert au futur badge « Maître des raccourcis » : `justes1` ≥ 2). Visite du Mac : 3 « Touchez… », 2 « Comment s'appelle… ? »,
+  2 application active, 2 applications ouvertes, 1 Spotlight ; Dock = Finder + 3 applications tirées au hasard ; suivi `vis-…`.
 - Mobile d'abord : 360 px de référence, colonne 480 px max, cibles tactiles ≥ 44 px, champs ≥ 16 px, aucun survol ni glisser-déposer indispensable.
 - Numéro de version affiché en bas de l'accueil et de l'aide : `window.TEXTES.version` dans `data/textes.js` — **le mettre à jour à chaque phase** (l'enseignant s'en sert pour vérifier la mise en ligne).
 
@@ -67,6 +72,7 @@ node tests/test-leitner.js             # boîtes de Leitner, délais, Révision 
 python3 tests/verifier_textes.py       # vouvoiement, chemins absolus, ressources externes, poids
 python3 tests/test_phase2.py           # Playwright : partie complète, sauvegarde, export/import, stockage bloqué, file://, 4 tailles
 python3 tests/test_phase3.py           # Playwright : Révision du jour de bout en bout, les 90 questions à 320 et 390 px
+python3 tests/test_phase4.py           # Playwright : Clavier secret et Visite du Mac (parties, erreurs, Spotlight, 4 tailles, file://)
 python3 tests/test_bilan_rempli.py     # « Mon bilan » rempli : aucun débordement, ≤ 600 px de haut dès 360 px
 ```
 
@@ -91,8 +97,8 @@ https://makkura9.github.io/mission-finder/tests/relecture.html ; imprimer en PDF
 | 0 Cadrage | ✅ validée |
 | 1 GitHub + Pages | ✅ validée |
 | 2 Squelette + Quiz express (20 questions pilotes) | ✅ validée (20 questions relues : toutes OK) |
-| 3 Banque QCM (90 questions) + fichier de relecture + Leitner / Révision du jour + bilan compacté | livrée sur une branche ; **en attente** : relecture des 70 nouvelles questions (badge « À relire » dans `tests/relecture.html`) et « validé » |
-| 4 Raccourcis + Bureau | à faire |
+| 3 Banque QCM (90 questions) + fichier de relecture + Leitner / Révision du jour + bilan compacté | ✅ validée (90 questions relues : toutes OK ; tests sur téléphone OK) |
+| 4 Raccourcis (Clavier secret) + Bureau (Visite du Mac) | livrée sur une branche ; **en attente** : relecture des textes (section « Phase 4 » de `tests/relecture.html`), tests sur téléphone et « validé » |
 | 5 Atelier fichiers | à faire |
 | 6 Recherche | à faire (créer `data/libelles-macos.js`) |
 | 7 Examen blanc, badges, finitions | à faire (examen blanc **sans** chronomètre) |
