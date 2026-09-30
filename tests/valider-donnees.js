@@ -5,10 +5,10 @@ const path = require('path');
 const SITE = path.join(__dirname, '..');
 const ctx = { window: {} };
 vm.createContext(ctx);
-for (const f of ['data/objectifs.js', 'data/niveaux.js', 'data/textes.js', 'data/questions.js', 'data/raccourcis.js', 'data/bureau.js']) {
+for (const f of ['data/objectifs.js', 'data/niveaux.js', 'data/textes.js', 'data/questions.js', 'data/raccourcis.js', 'data/bureau.js', 'data/missions-finder.js', 'data/libelles-macos.js']) {
   vm.runInContext(fs.readFileSync(path.join(SITE, f), 'utf8'), ctx, { filename: f });
 }
-const { OBJECTIFS, NIVEAUX, TEXTES, QUESTIONS, RACCOURCIS: FICHE, BUREAU } = ctx.window;
+const { OBJECTIFS, NIVEAUX, TEXTES, QUESTIONS, RACCOURCIS: FICHE, BUREAU, ATELIER, LIBELLES_MACOS } = ctx.window;
 const erreurs = [];
 const codes = new Set(OBJECTIFS.liste.map(o => o.code));
 const themes = new Set(OBJECTIFS.themes.map(t => t.code));
@@ -121,6 +121,30 @@ if (BUREAU.applications.length < 4) erreurs.push('bureau.js : au moins 4 applica
 if (JSON.stringify(BUREAU.menusFinder) !== JSON.stringify(['Fichier', 'Édition', 'Présentation', 'Aller', 'Fenêtre', 'Aide'])) erreurs.push('bureau.js : menus du Finder différents de la capture du tutoriel');
 if (!BUREAU.spotlight.resultats.some(x => x.nom === BUREAU.spotlight.cible && x.genre === 'Application')) erreurs.push('bureau.js : la cible Spotlight doit être une application des résultats');
 BUREAU.spotlight.resultats.forEach(x => { if (!['Application', 'Document', 'Dossier'].includes(x.genre)) erreurs.push(`bureau.js : genre inconnu pour ${x.nom}`); });
+// Le grand rangement (data/missions-finder.js)
+const idsFichiers = new Set(ATELIER.fichiers.map(f => f.id));
+if (idsFichiers.size !== ATELIER.fichiers.length) erreurs.push('missions-finder.js : id de fichier en double');
+const CATS = ['Web', 'Brochures', 'Formulaires', 'Tutoriels', 'Ville', 'Montagne', 'Plage'];
+ATELIER.fichiers.forEach(f => {
+  if (f.categorie && !CATS.includes(f.categorie)) erreurs.push(`missions-finder.js : ${f.id}, catégorie inconnue`);
+  if (f.doublonDe && !idsFichiers.has(f.doublonDe)) erreurs.push(`missions-finder.js : ${f.id}, doublon d'un fichier inconnu`);
+  if (f.aRenommer && !ATELIER.motsCles[f.categorie]) erreurs.push(`missions-finder.js : ${f.id}, pas de mots-clés pour ${f.categorie}`);
+  if (!(f.taille > 0)) erreurs.push(`missions-finder.js : ${f.id}, taille manquante`);
+});
+ATELIER.archive.contenu.forEach(r => { if (!idsFichiers.has(r)) erreurs.push(`missions-finder.js : archive, fichier ${r} inconnu`); });
+const nomsArchive = ATELIER.archive.contenu.map(r => ATELIER.fichiers.find(f => f.id === r).nom.toLowerCase());
+if (new Set(nomsArchive).size !== nomsArchive.length) erreurs.push('missions-finder.js : deux fichiers de l\'archive ont le même nom');
+if (ATELIER.missions.length !== 9) erreurs.push(`missions-finder.js : ${ATELIER.missions.length} missions au lieu de 9`);
+ATELIER.missions.forEach((m, k) => {
+  if (m.id !== 'm' + (k + 1)) erreurs.push(`missions-finder.js : mission ${k + 1}, id ${m.id}`);
+  if (!codes.has(m.objectif)) erreurs.push(`missions-finder.js : ${m.id}, objectif inconnu`);
+  for (const c of ['titre', 'contexte', 'consigne']) if (!m[c]) erreurs.push(`missions-finder.js : ${m.id} sans « ${c} »`);
+  if (!Array.isArray(m.indices) || m.indices.length !== 2) erreurs.push(`missions-finder.js : ${m.id}, il faut 2 indices`);
+});
+if (JSON.stringify(ATELIER).includes('2025_2026')) erreurs.push('missions-finder.js : horaire 2025_2026 (décision : 2026_2027)');
+for (const c of ['nouveauDossier', 'renommer', 'deplacer', 'copier', 'compresser', 'decompresser', 'corbeille', 'informations', 'annuler']) {
+  if (!LIBELLES_MACOS.actions[c]) erreurs.push(`libelles-macos.js : action ${c} manquante`);
+}
 console.log(`Clavier secret : ${FICHE.length} raccourcis — Visite du Mac : ${BUREAU.elements.length} éléments, ${BUREAU.applications.length} applications`);
 if (erreurs.length) { console.log('ÉCHEC :\n - ' + erreurs.join('\n - ')); process.exit(1); }
 console.log('Données valides : OK');

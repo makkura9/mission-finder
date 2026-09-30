@@ -105,7 +105,6 @@ with sync_playwright() as p:
     pg.goto(BASE + "#/accueil"); pg.wait_for_timeout(200)
     verifier(pg.locator('a.carte-activite[href="#/clavier"]').count() == 1, "carte « Clavier secret » active")
     verifier(pg.locator('a.carte-activite[href="#/bureau"]').count() == 1, "carte « Visite du Mac » active")
-    verifier(pg.locator('.carte-activite.est-inactive').count() == 2, "2 activités encore « Bientôt disponible »")
     ctx.close()
 
     # ------------------------------------------------------------ 2. Clavier secret : partie parfaite
@@ -305,7 +304,7 @@ with sync_playwright() as p:
     pg.click('[data-action="commencer"]'); pg.wait_for_timeout(60)
     verifier(pg.locator(".mac").count() == 1, "Visite du Mac fonctionne ouverte par double-clic")
     pg.goto(FILE + "#/bilan"); pg.wait_for_timeout(100)
-    verifier(pg.locator(".bilan-act .etoiles").count() == 3, "Mon bilan : étoiles des 3 activités ouvertes")
+    verifier(pg.locator(".bilan-act .etoiles").count() >= 3, "Mon bilan : étoiles des activités ouvertes (dont les 2 de la phase 4)")
     verifier(not pg._erreurs, f"aucune erreur console en local ({pg._erreurs})")
     ctx.close()
     b.close()

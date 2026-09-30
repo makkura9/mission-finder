@@ -389,6 +389,67 @@ table.fiche td { border-top: 1px solid var(--bordure); padding: 5px 4px; vertica
 .note-simulation { margin-top: 14px; }
 .info { font-size: 0.9rem; padding: 8px 12px; border-radius: 10px; background: var(--principal-doux); margin: 8px 0 0; }
 
+/* ---------- Le grand rangement : Finder simulé ---------- */
+.carte-consigne { margin-top: 0; }
+.carte-consigne .petit { margin-bottom: 4px; }
+.consigne { font-weight: 700; margin: 0; }
+.fx { margin-top: 12px; border: 1px solid var(--bordure-forte); border-radius: 12px; background: var(--carte); overflow: hidden; }
+.fx-barre { display: flex; align-items: center; gap: 2px; padding: 0 2px; background: var(--principal-doux); border-bottom: 1px solid var(--bordure); }
+.fx-btn { width: 44px; height: 44px; flex: none; border: 0; border-radius: 8px; background: transparent; color: var(--principal); font: inherit; font-size: 1.5rem; font-weight: 700; line-height: 1; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+.fx-btn:disabled { color: var(--texte-2); opacity: 0.4; cursor: default; }
+.fx-btn[aria-expanded="true"] { background: var(--carte); }
+.fx-titre { flex: 1; min-width: 0; font-weight: 800; text-align: center; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fx-emplacements { list-style: none; margin: 0; padding: 4px; border-bottom: 1px solid var(--bordure); background: var(--fond); }
+.fx-fil { display: flex; flex-wrap: wrap; align-items: center; padding: 0 4px; border-bottom: 1px solid var(--bordure); font-size: 0.85rem; }
+.fx-seg { min-height: 44px; min-width: 44px; padding: 0 6px; border: 0; background: transparent; color: var(--principal); font: inherit; font-weight: 600; cursor: pointer; overflow-wrap: anywhere; text-align: left; }
+.fx-seg[aria-current="page"] { color: var(--texte); font-weight: 800; }
+.fx-sep { color: var(--texte-2); }
+.fx-liste { list-style: none; margin: 0; padding: 0; }
+.fx-ligne { display: flex; align-items: stretch; border-bottom: 1px solid var(--bordure); }
+.fx-ligne:last-child { border-bottom: 0; }
+.fx-el { flex: 1; min-width: 0; min-height: 52px; display: grid; grid-template-columns: 32px 1fr; grid-template-rows: auto auto; column-gap: 8px; align-items: center; padding: 4px 6px 4px 8px; border: 0; background: transparent; color: var(--texte); font: inherit; text-align: left; cursor: pointer; }
+.fx-el .fx-icone { grid-row: span 2; }
+.fx-nom { font-weight: 600; overflow-wrap: anywhere; line-height: 1.25; }
+.fx-meta { font-size: 0.75rem; color: var(--texte-2); }
+.fx-plus { width: 48px; flex: none; border: 0; border-left: 1px solid var(--bordure); background: transparent; color: var(--principal); font: inherit; font-size: 1.4rem; font-weight: 800; cursor: pointer; }
+.fx-icone { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; flex: none; }
+.fx-icone svg { width: 24px; height: 30px; }
+.fx-icone-dossier svg { width: 28px; height: 28px; }
+.fx-vide { padding: 16px; color: var(--texte-2); text-align: center; }
+.fx-message { margin: 0; padding: 6px 10px; font-size: 0.85rem; font-weight: 600; background: var(--fond); border-top: 1px solid var(--bordure); }
+.fx-message:empty { display: none; }
+.fx-dest { display: flex; align-items: center; gap: 8px; width: 100%; min-height: 44px; padding: 4px 8px; border: 0; border-radius: 8px; background: transparent; color: var(--texte); font: inherit; text-align: left; cursor: pointer; }
+.fx-dest span { overflow-wrap: anywhere; }
+.fx-dest small { color: var(--texte-2); }
+.fx-dest.est-actuel { background: var(--principal-doux); font-weight: 700; }
+.fx-apercu { display: block; border-radius: 8px; border: 1px solid var(--bordure); margin: 4px 0 8px; max-height: 180px; }
+.fx-infos { display: grid; grid-template-columns: auto 1fr; gap: 4px 12px; margin: 0 0 4px; font-size: 0.9rem; }
+.fx-infos dt { color: var(--texte-2); font-weight: 600; }
+.fx-infos dd { margin: 0; overflow-wrap: anywhere; }
+.feuille-fond { position: fixed; inset: 0; z-index: 30; background: rgba(0, 0, 0, 0.45); }
+.feuille {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 31; max-width: 480px; max-height: 85vh; margin: 0 auto; overflow-y: auto;
+  padding: 14px 16px calc(16px + env(safe-area-inset-bottom)); background: var(--carte); color: var(--texte); border-radius: 16px 16px 0 0;
+}
+.feuille h2 { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; margin: 0 0 8px; overflow-wrap: anywhere; }
+.feuille h2 span { min-width: 0; }
+.feuille-actions .btn-bloc { margin-top: 8px; }
+.feuille-rangee { display: flex; gap: 8px; margin-top: 12px; }
+.feuille-rangee .btn { flex: 1; }
+.feuille-dossiers { list-style: none; margin: 0 0 4px; padding: 0; }
+.indices { background: var(--principal-doux); border-color: var(--principal); }
+.indices p:last-child { margin-bottom: 0; }
+.verif { list-style: none; margin: 6px 0 0; padding: 0; }
+.verif li { display: flex; gap: 6px; margin-bottom: 4px; }
+.verif-ok span { color: var(--juste); font-weight: 900; }
+.verif-ko span { color: var(--faux); font-weight: 900; }
+.liste-missions { list-style: none; margin: 8px 0 0; padding: 0; }
+.carte-mission { width: 100%; display: flex; align-items: center; gap: 10px; text-align: left; font: inherit; cursor: pointer; margin-top: 8px; min-height: 64px; }
+.mission-num { width: 32px; height: 32px; flex: none; border-radius: 50%; background: var(--principal-doux); color: var(--principal); font-weight: 800; display: flex; align-items: center; justify-content: center; }
+.mission-corps { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.mission-corps .petit { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mission-etat { flex: none; }
+
 /* ---------- Résultat ---------- */
 .carte-resultat { text-align: center; }
 .resultat-etoiles { margin: 4px 0; }
