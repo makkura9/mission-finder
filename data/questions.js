@@ -25,6 +25,7 @@
    },
 
    Dans un texte entre guillemets droits "…", l'apostrophe droite ' est permise.
+   Guide pas à pas et 3 erreurs à éviter : README.md, section « Modifier une question ».
    ========================================================================== */
 
 window.QUESTIONS = [

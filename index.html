@@ -20,6 +20,9 @@
       lienManifeste.href = 'manifest.webmanifest';
       document.head.appendChild(lienManifeste);
     }
+    /* Note les erreurs de chargement (ex. virgule oubliée dans data/questions.js) pour les afficher. */
+    window.MF_ERREURS = [];
+    window.addEventListener('error', function (e) { window.MF_ERREURS.push({ fichier: e.filename || '', ligne: e.lineno || 0 }); });
   </script>
 </head>
 <body>
@@ -74,5 +77,21 @@
   <script src="js/modules/recherche.js"></script>
   <script src="js/modules/examen.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    /* Si un fichier de données contient une erreur, le site affiche un message clair au lieu d'une page vide. */
+    document.addEventListener('DOMContentLoaded', function () {
+      var donnees = { OBJECTIFS: 'objectifs', NIVEAUX: 'niveaux', TEXTES: 'textes', QUESTIONS: 'questions', RACCOURCIS: 'raccourcis',
+        BUREAU: 'bureau', ATELIER: 'missions-finder', RECHERCHE: 'fichiers-virtuels', BADGES: 'badges', LIBELLES_MACOS: 'libelles-macos' };
+      var casses = Object.keys(donnees).filter(function (g) { return !window[g]; }).map(function (g) { return 'data/' + donnees[g] + '.js'; });
+      if (!casses.length) return;
+      var lignes = casses.map(function (f) {
+        var err = window.MF_ERREURS.filter(function (e) { return e.fichier.slice(-f.length) === f && e.ligne; })[0];
+        return '<li><b>' + f + '</b>' + (err ? ' (vers la ligne ' + err.ligne + ')' : '') + '</li>';
+      }).join('');
+      document.getElementById('app').innerHTML = '<div class="page"><h1>Site momentanément indisponible</h1>' +
+        '<div class="carte"><p>Un fichier du site contient une erreur. Prévenez votre enseignant.</p>' +
+        '<p class="petit">Pour l\'enseignant : vérifiez ce fichier (virgule oubliée, guillemet non fermé, guillemets typographiques) :</p><ul class="liste-puces">' + lignes + '</ul></div></div>';
+    });
+  </script>
 </body>
 </html>

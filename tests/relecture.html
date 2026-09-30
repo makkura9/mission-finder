@@ -97,7 +97,7 @@
     ? QUESTIONS.length + ' questions, dont ' + nouvelles + ' à relire (badge « À relire »). Bonne(s) réponse(s) en vert (✓). ' +
       'Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. Cochez « OK » ou notez la correction (identifiant de la question + texte corrigé).'
     : 'Les ' + QUESTIONS.length + ' questions du Quiz express sont validées (cochez la case pour les afficher). ') +
-    ' Les textes des phases 4 à 6 sont validés. À relire en phase 7 : les badges et l\'examen blanc, tout en bas.';
+    ' Tous les textes (phases 2 à 7) sont relus et validés.';
   function afficher() {
   const voirValidees = document.getElementById('voir-validees').checked;
   let h = '';
@@ -209,9 +209,9 @@
 
   // Phase 7 : badges et examen blanc
   (function () {
-    let h = '<h2>Les 8 badges <span class="badge badge-nouvelle">À relire</span></h2><table class="relire"><thead><tr><th>Badge</th><th>Texte affiché (comment l\'obtenir)</th></tr></thead><tbody>' +
+    let h = '<h2>Les 8 badges <span class="badge badge-validee">Validée</span></h2><table class="relire"><thead><tr><th>Badge</th><th>Texte affiché (comment l\'obtenir)</th></tr></thead><tbody>' +
       BADGES.map(b => '<tr><td><b>' + esc(b.nom) + '</b></td><td>' + esc(b.description) + '</td></tr>').join('') + '</tbody></table>' +
-      '<h2>L\'examen blanc <span class="badge badge-nouvelle">À relire</span></h2><table class="relire"><tbody>' +
+      '<h2>L\'examen blanc <span class="badge badge-validee">Validée</span></h2><table class="relire"><tbody>' +
       '<tr><th>Ouverture</th><td>Quand chaque activité a été jouée au moins une fois (message : « Jouez d\'abord au moins une fois chaque activité (n sur 5) »).</td></tr>' +
       '<tr><th>Partie 1</th><td>20 questions du Quiz express : une par objectif (19) + une au hasard ; règles habituelles (2 essais, explications).</td></tr>' +
       '<tr><th>Partie 2</th><td>Une mission courte du Grand rangement tirée au hasard : doublons, noms explicites ou compression.</td></tr>' +

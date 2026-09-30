@@ -32,6 +32,7 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 | Système de score | Validé, implémenté dans `js/progression.js` et `js/modules/qcm.js` (voir section 4) |
 | Menu Pomme (figures) | Pomme générique dessinée : **validé** (phase 3) |
 | Libellés iPhone / Android (Aide) | Délégué à Claude (phase 3) : l'Aide garde les deux variantes (« Sur l'écran d'accueil » ou « Ajouter à l'écran d'accueil » ; « Ajouter à l'écran d'accueil » ou « Installer l'application ») |
+| Mode hors ligne (service worker) | **Non** (phase 7) : le site demande une connexion ; ne pas en ajouter |
 | Répétition espacée (phase 3) | Boîtes 1 à 5 ; retour après 0, 1, 3, 7, 14 jours (`js/leitner.js`) ; Révision du jour = 5 à 10 questions, d'abord les ratées, complétées par des nouvelles, thèmes entrelacés ; Quiz express = d'abord questions à revoir ou jamais vues |
 
 ## 3. Règles impératives (rappel du cahier des charges)
@@ -98,7 +99,12 @@ node tests/test-recherche.js           # Détective : jeu discriminant (solution
 python3 tests/test_phase6.py           # Playwright : Spotlight, recherche avancée, photos mystères, 4 tailles, file://
 python3 tests/test_phase7.py           # Playwright : examen blanc complet, badges, ancien état sans badges, 4 tailles, file://
 python3 tests/test_bilan_rempli.py     # « Mon bilan » rempli : aucun débordement, ≤ 600 px de haut dès 360 px
+python3 tests/test_phase8.py           # message clair si data/questions.js est cassé (3 erreurs du guide), fiche élève, QR code
 ```
+
+Diffusion (phase 8) : `python3 tests/generer_diffusion.py` régénère `diffusion/qr-code-mission-finder.png`, `fiche-eleve.html`
+et `fiche-eleve.pdf` (A4, deux demi-pages) ; nécessite `pip install segno` (et `opencv-python-headless` pour relire le QR code).
+Si un fichier `data/*.js` ne se charge pas, `index.html` affiche « Site momentanément indisponible » avec le fichier et la ligne.
 
 Environnement cloud (vérifié en phase 3) : Chromium est préinstallé (`/opt/pw-browsers`, révision 1194).
 Installer la version de Playwright correspondante : `pip install playwright==1.56.0` (la dernière version
@@ -125,8 +131,8 @@ https://makkura9.github.io/mission-finder/tests/relecture.html ; imprimer en PDF
 | 4 Raccourcis (Clavier secret) + Bureau (Visite du Mac) | ✅ validée (textes relus, tests sur téléphone OK) |
 | 5 Atelier fichiers (Le grand rangement) | ✅ validée (relecture et tests sur téléphone OK) |
 | 6 Recherche (Détective du Finder) | ✅ validée (relecture et tests sur téléphone OK) |
-| 7 Examen blanc, badges, finitions | livrée sur une branche ; **en attente** : relecture (section « Phase 7 »), tests sur téléphone, réponse sur l'option hors ligne et « validé » |
-| 8 QR code, fiche élève, README final | à faire |
+| 7 Examen blanc, badges, finitions | ✅ validée (relecture et tests sur téléphone OK ; hors ligne : non) |
+| 8 QR code, fiche élève, README final | livrée sur une branche ; **en attente** : impression d'essai de la fiche, scan du QR code, « validé » |
 
 ## 8. Points ouverts (réponses attendues de l'enseignant)
 
