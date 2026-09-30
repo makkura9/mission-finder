@@ -8,6 +8,8 @@ echecs = []
 
 # 1. Vouvoiement : mots du tutoiement dans les chaînes des fichiers du site
 fichiers = glob.glob("js/**/*.js", recursive=True) + glob.glob("data/*.js") + ["index.html"]
+# Noms propres tirés des documents de cours, qui ressemblent à du tutoiement.
+EXCEPTIONS = ["Al Tes"]   # auteur fictif de l'exercice 5
 TUTOIEMENT = re.compile(r"\b(tu|ton|ta|tes|toi|te|tien|tienne|choisis|reviens|réponds|peux|veux|dois|sais|fais)\b", re.I)
 # Impératifs du tutoiement en « -e » : identiques à la 3e personne (« ⌘ A sélectionne tout »),
 # donc signalés seulement en début de phrase (« Clique… », « Touche… »).
@@ -21,6 +23,7 @@ for f in fichiers:
     if f.endswith(".html"): chaines.append(re.sub(r"<[^>]+>", " ", texte))
     for c in chaines:
         c2 = html.unescape(re.sub(r"<[^>]+>", " ", c))
+        for exception in EXCEPTIONS: c2 = c2.replace(exception, " ")
         for m in list(TUTOIEMENT.finditer(c2)) + list(IMPERATIF.finditer(c2.strip())):
             echecs.append(f"tutoiement possible dans {f} : « {m.group(0)} » → {c2.strip()[:80]}")
 

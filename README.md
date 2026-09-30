@@ -6,7 +6,7 @@ Site de révision pour smartphone : fichiers et dossiers sous macOS (préparatio
 - Aucune donnée n'est envoyée : pas de compte, pas de statistiques, pas de ressource externe.
 - La progression des élèves reste uniquement dans le navigateur de leur téléphone.
 
-**État actuel : phase 2 — accueil, Quiz express (20 questions pilotes), Mon bilan, Profil, Aide.**
+**État actuel : phase 3 — Quiz express (90 questions), Révision du jour (répétition espacée), Mon bilan, Profil, Aide.**
 
 ---
 
@@ -16,7 +16,8 @@ Site de révision pour smartphone : fichiers et dossiers sous macOS (préparatio
 
 - **Dépôt** (*repository*) : dossier en ligne qui contient les fichiers du site et l'historique de leurs modifications.
 - **Commit** (*Commit changes*) : enregistrement d'une modification, avec un court message.
-- **Branche** (*branch*) : version des fichiers. `main` est la version principale, la seule utilisée ici.
+- **Branche** (*branch*) : version des fichiers. `main` est la version principale, celle que publie GitHub Pages ; Claude Code travaille sur une branche à part.
+- **Pull request** : demande de fusion d'une branche dans `main`. **Fusionner** (*merge*) = publier les modifications dans la version principale.
 
 L'interface de GitHub est en anglais. Les libellés ci-dessous sont ceux connus à mi-2026 ; ils peuvent légèrement varier.
 
@@ -61,7 +62,8 @@ css/style.css            couleurs et mise en page (charte « Léman », modes cl
 js/ui.js                 petits outils d'affichage
 js/storage.js            sauvegarde de la progression (localStorage)
 js/progression.js        points, niveaux, étoiles, maîtrise, records
-js/figures.js            illustrations des questions (barre des menus, Dock, fichier)
+js/leitner.js            répétition espacée (boîtes de Leitner), Révision du jour
+js/figures.js            illustrations des questions (barre des menus, Dock, fichier, Finder)
 js/modules/qcm.js        Quiz express
 js/app.js                navigation, accueil, bilan, profil, aide
 data/questions.js        banque de questions (modifiable)
@@ -71,12 +73,20 @@ data/textes.js           messages de retour, numéro de version
 img/                     icônes du site
 CLAUDE.md                consignes lues par Claude Code à chaque session
 docs/                    cahier des charges (non utilisé par le site)
-tests/                   tests automatiques (non utilisés par le site)
+tests/                   tests automatiques et page de relecture des questions (non utilisés par le site)
 ```
 
 ### Où est enregistrée la progression ?
 
 Dans le `localStorage` du navigateur de l'élève (clé `missionFinder.v1`). Le principe est le même que celui des cookies, mais la capacité est plus grande (environ 5 Mo au lieu de 4 Ko) et rien n'est envoyé au serveur à chaque visite. La progression est donc liée à un téléphone et à un navigateur ; l'onglet **Profil** permet de la transférer par un code.
+
+### Relire les questions
+
+Ouvrir https://makkura9.github.io/mission-finder/tests/relecture.html (sur ordinateur) : toutes les questions, avec la bonne réponse, les explications et la source. Les questions à relire portent le badge « À relire ». Pour imprimer : Ctrl + P (ou ⌘ P) → « Enregistrer au format PDF ».
+
+### Révision du jour (répétition espacée)
+
+Chaque question vue est rangée dans une « boîte » de 1 à 5. Juste du premier coup : boîte suivante ; sinon : retour en boîte 1. Une question revient dans la Révision du jour après 0 jour (boîte 1), 1 jour (boîte 2), 3 jours (boîte 3), 7 jours (boîte 4) ou 14 jours (boîte 5). Ces délais se modifient en haut de `js/leitner.js`.
 
 ### Modifier une question
 
@@ -86,15 +96,15 @@ Ouvrir `data/questions.js` sur github.com, cliquer l'icône crayon, modifier le 
 
 | Élément | Où il apparaît | Question |
 |---|---|---|
-| « Par galerie » | question fin-01 | Libellé exact du menu Présentation dans macOS 15 ? |
-| Menus « Fichier, Édition, Affichage » d'Excel | figure de la question bur-01 | Libellés exacts dans Excel pour Mac ? |
-| Menu Pomme | figures | Représenté par une pomme stylisée générique (pas le logo Apple) : choix à valider |
-| Lieu de prise de vue d'une photo | phase 6 (mission « photos mystères ») | Visible dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ? |
+| « Par galerie » | question fin-01 | Libellé exact du menu Présentation dans macOS 15 ? (conservé en attendant) |
+| Menus « Fichier, Édition, Affichage » d'Excel | figure de la question bur-01 | Libellés exacts dans Excel pour Mac ? (conservés en attendant) |
+| « Ce Mac » | question rec-07 | Libellé de l'étendue de la recherche avancée (⌘ F) |
+| Lieu de prise de vue d'une photo | phase 6 (mission « photos mystères ») | Visible dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ? Aucune question ne l'affirme pour l'instant. |
 
 ### Points à vérifier sur un téléphone
 
 | Élément | Question |
 |---|---|
-| iPhone : « Sur l'écran d'accueil » / « Ajouter à l'écran d'accueil » | Libellé exact dans votre version d'iOS ? |
-| iPhone : progression de l'icône séparée de celle de Safari | À confirmer sur un iPhone |
-| Android : « Ajouter à l'écran d'accueil » / « Installer l'application » | Libellé exact dans Chrome ? |
+| iPhone : « Sur l'écran d'accueil » / « Ajouter à l'écran d'accueil » | Décidé (phase 3) : les deux libellés restent indiqués dans l'Aide |
+| iPhone : progression de l'icône séparée de celle de Safari | Décidé (phase 3) : l'Aide conseille d'utiliser toujours l'icône |
+| Android : « Ajouter à l'écran d'accueil » / « Installer l'application » | Décidé (phase 3) : les deux libellés restent indiqués dans l'Aide |

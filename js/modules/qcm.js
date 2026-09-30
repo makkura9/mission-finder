@@ -1,5 +1,7 @@
-/* Mission Finder — module « Quiz express » (QCM).
-   - 10 questions tirées au hasard (moins si le thème en compte moins), sans doublon.
+/* Mission Finder — module « Quiz express » (QCM) et « Révision du jour ».
+   - 10 questions (moins si le thème en compte moins), sans doublon : d'abord celles à revoir
+     et celles jamais vues (boîtes de Leitner, js/leitner.js), puis les autres, au hasard.
+   - Révision du jour : 5 à 10 questions choisies par js/leitner.js, tous thèmes mélangés.
    - Ordre des questions et des propositions mélangé à chaque partie (sauf Vrai/Faux).
    - 2 essais (1 seul pour Vrai/Faux). Après une 1re erreur : la réponse choisie est marquée,
      une phrase explique pourquoi elle est fausse, sans révéler la bonne.
@@ -20,7 +22,9 @@
   }
 
   function nouvellePartie(mode) {
-    var tirage = ui().melanger(questionsDuMode(mode).slice()).slice(0, TAILLE_PARTIE);
+    var tirage = mode === 'revision'
+      ? MF.leitner.tirageRevision()
+      : MF.leitner.entrelacer(MF.leitner.prioriser(questionsDuMode(mode)).slice(0, TAILLE_PARTIE));
     partie = {
       mode: mode,
       items: tirage.map(function (q) {
@@ -133,7 +137,8 @@
       mode: partie.mode, n: n, total: total, pointsBase: partie.pointsBase, bonus: partie.bonus,
       justes1: partie.justes1, etoiles: etoiles, record: rec, niveauAvant: partie.niveauAvant, niveau: niv,
       aRevoir: partie.items.filter(function (it) { return it.fin && !it.fin.premierCoup; }).map(function (it) {
-        return { enonce: it.q.enonce, bonne: texteBonnes(it.q), explication: it.q.explication };
+        var fichier = it.q.figure && it.q.figure.type === 'fichier' ? ' (' + it.q.figure.nom + ')' : '';
+        return { enonce: it.q.enonce + fichier, bonne: texteBonnes(it.q), explication: it.q.explication };
       })
     };
     partie = null;
@@ -149,7 +154,7 @@
     var h = '<div class="page">' +
       '<p class="fil"><a href="#/accueil">‹ Accueil</a></p>' +
       '<h1>Quiz express</h1>' +
-      '<p class="intro">10 questions tirées au hasard, environ 4 minutes. Deux essais par question (un seul pour les « Vrai ou faux »).</p>';
+      '<p class="intro">10 questions, environ 4 minutes : d\'abord celles à revoir et celles que vous n\'avez jamais vues. Deux essais par question (un seul pour les « Vrai ou faux »).</p>';
     if (act.parties > 0) h += '<p class="petit">Meilleur résultat : ' + ui().etoiles(act.etoilesMax) + '</p>';
 
     if (partie) {
@@ -175,7 +180,7 @@
     el.innerHTML = h;
 
     el.querySelectorAll('[data-mode]').forEach(function (b) {
-      b.addEventListener('click', function () { nouvellePartie(b.getAttribute('data-mode')); ui().naviguer('#/qcm/partie'); });
+      b.addEventListener('click', function () { demarrer(b.getAttribute('data-mode')); });
     });
     var r = el.querySelector('[data-action="reprendre"]');
     if (r) r.addEventListener('click', function () { ui().naviguer('#/qcm/partie'); });
@@ -281,9 +286,16 @@
       '<p class="resultat-etoiles">' + ui().etoiles(r.etoiles, 40) + '</p>' +
       '<p class="resultat-score">' + ui().points(r.total) + '</p>' +
       '<p class="petit">' + (r.bonus ? 'dont bonus de série : +' + r.bonus + ' · ' : '') + 'justes du premier coup : ' + r.justes1 + ' / ' + r.n + '</p>';
-    if (r.record.nouveauRecord) h += '<p class="resultat-record">Nouveau record ! ' + (r.record.ancienRecord !== null ? '(ancien : ' + ui().points(r.record.ancienRecord) + ')' : '') + '</p>';
-    else h += '<p class="petit">Votre record (' + ui().esc(ui().nomTheme(r.mode)) + ') : ' + ui().points(r.record.record) + '</p>';
+    // Pas de record pour la Révision du jour : sa longueur varie (5 à 10 questions).
+    if (r.mode !== 'revision') {
+      if (r.record.nouveauRecord) h += '<p class="resultat-record">Nouveau record ! ' + (r.record.ancienRecord !== null ? '(ancien : ' + ui().points(r.record.ancienRecord) + ')' : '') + '</p>';
+      else h += '<p class="petit">Votre record (' + ui().esc(ui().nomTheme(r.mode)) + ') : ' + ui().points(r.record.record) + '</p>';
+    }
     if (r.niveau.niveau > r.niveauAvant) h += '<p class="resultat-niveau">Vous passez au niveau ' + r.niveau.niveau + ' : ' + ui().esc(r.niveau.nom) + ' !</p>';
+    if (r.mode === 'revision') {
+      var reste = MF.leitner.resume().aRevoir;
+      h += '<p class="petit">' + (reste ? 'Encore ' + reste + ' question' + (reste > 1 ? 's' : '') + ' à revoir aujourd\'hui.' : '✓ Plus aucune question à revoir aujourd\'hui.') + '</p>';
+    }
     h += '</div>';
 
     if (r.aRevoir.length) {
@@ -295,16 +307,22 @@
     } else {
       h += '<p class="intro">Toutes vos réponses étaient justes du premier coup.</p>';
     }
-    h += '<div class="boutons-fin"><button type="button" class="btn btn-bloc" data-action="rejouer">Rejouer (' + ui().esc(ui().nomTheme(r.mode)) + ')</button>' +
+    h += '<div class="boutons-fin"><button type="button" class="btn btn-bloc" data-action="rejouer">' +
+      (r.mode === 'revision' ? 'Nouvelle révision' : 'Rejouer (' + ui().esc(ui().nomTheme(r.mode)) + ')') + '</button>' +
       '<a class="btn btn-secondaire btn-bloc" href="#/qcm">Choisir un autre thème</a>' +
       '<a class="btn btn-secondaire btn-bloc" href="#/accueil">Accueil</a></div></div>';
     el.innerHTML = h;
-    el.querySelector('[data-action="rejouer"]').addEventListener('click', function () {
-      nouvellePartie(r.mode); ui().naviguer('#/qcm/partie');
-    });
+    el.querySelector('[data-action="rejouer"]').addEventListener('click', function () { demarrer(r.mode); });
+  }
+
+  /* Lance une partie (mode : « melange », code d'un thème ou « revision »). */
+  function demarrer(mode) {
+    nouvellePartie(mode);
+    ui().naviguer('#/qcm/partie');
   }
 
   MF.qcm = {
+    demarrer: demarrer,
     ecranChoix: ecranChoix,
     ecranPartie: ecranPartie,
     ecranResultat: ecranResultat,

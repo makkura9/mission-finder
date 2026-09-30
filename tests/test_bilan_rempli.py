@@ -16,9 +16,10 @@ with sync_playwright() as p:
         deb=pg.evaluate("[...document.querySelectorAll('.page-bilan *')].filter(e=>e.getBoundingClientRect().right>window.innerWidth+0.5).length")
         sw=pg.evaluate("document.documentElement.scrollWidth<=innerWidth")
         haut=pg.evaluate("document.querySelector('.page-bilan').getBoundingClientRect().height")
-        r = deb==0 and sw
+        # Une seule capture d'écran : ≤ 600 px dès 360 px de large (Safari sur iPhone 12 à 15, barre de navigation comprise)
+        r = deb==0 and sw and (w < 360 or haut <= 600)
         ok &= r
-        print(f"{w}x{h}: éléments qui dépassent = {deb}, défilement horizontal = {not sw}, hauteur = {round(haut)} px -> {'OK' if r else 'ÉCHEC'}")
+        print(f"{w}x{h}: éléments qui dépassent = {deb}, défilement horizontal = {not sw}, hauteur = {round(haut)} px{' (max 600)' if w >= 360 else ''} -> {'OK' if r else 'ÉCHEC'}")
         if w==360: pg.screenshot(path=os.path.join(tempfile.gettempdir(), "bilan-plein.png"))
         ctx.close()
     b.close()
