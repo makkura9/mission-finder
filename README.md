@@ -6,7 +6,7 @@ Site de révision pour smartphone : fichiers et dossiers sous macOS (préparatio
 - Aucune donnée n'est envoyée : pas de compte, pas de statistiques, pas de ressource externe.
 - La progression des élèves reste uniquement dans le navigateur de leur téléphone.
 
-**État actuel : phase 6 — les 5 activités : Quiz express (90 questions) et Révision du jour, Clavier secret, Visite du Mac, Le grand rangement, Détective du Finder (Spotlight, recherche avancée, photos mystères) ; Mon bilan, Profil, Aide.**
+**État actuel : phase 7 — examen blanc (sans chronomètre), 8 badges ; les 5 activités : Quiz express (90 questions) et Révision du jour, Clavier secret, Visite du Mac, Le grand rangement, Détective du Finder (Spotlight, recherche avancée, photos mystères) ; Mon bilan, Profil, Aide.**
 
 ---
 
@@ -72,6 +72,8 @@ js/modules/raccourcis.js Clavier secret (clavier virtuel)
 js/modules/bureau.js     Visite du Mac (Bureau simulé, Spotlight)
 js/modules/finder.js     Le grand rangement (écran du Finder simulé, missions)
 js/modules/recherche.js  Détective du Finder (Spotlight, recherche avancée, photos mystères)
+js/modules/examen.js     Examen blanc (20 questions + 2 missions, bilan par thème)
+js/badges.js             conditions des 8 badges
 js/app.js                navigation, accueil, bilan, profil, aide
 data/questions.js        banque de questions (modifiable)
 data/raccourcis.js       les 20 raccourcis de la fiche (Clavier secret)
@@ -79,6 +81,7 @@ data/bureau.js           légende du Bureau, applications du Dock, résultats Sp
 data/missions-finder.js  les 9 missions, les fichiers fictifs de l'exercice 1, les mots reconnus (Le grand rangement)
 data/fichiers-virtuels.js les fichiers fictifs et les missions de recherche (exercices 4 et 5)
 data/libelles-macos.js   libellés inspirés de macOS à vérifier sur un Mac du gymnase
+data/badges.js           noms et textes des 8 badges
 data/objectifs.js        objectifs d'apprentissage
 data/niveaux.js          niveaux et seuils de points
 data/textes.js           messages de retour, numéro de version

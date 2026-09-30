@@ -33,11 +33,12 @@
 
   /* ---------- Session ---------- */
 
-  function commencer(k) {
+  function commencer(k, options) {
     var m = missions()[k];
     session = { k: k, mission: m, lignes: [], portee: 'mac', indices: 0, reussie: false, gain: null, verif: null, message: '', feuille: null,
       requete: '', faits: [], noms: {} };
     (m.photos || []).forEach(function (id) { session.noms[id] = M().element(id).nom; });
+    session.examen = !!(options && options.examen);
     ui().naviguer('#/recherche/mission');
   }
 
@@ -48,6 +49,7 @@
     var ancien = stats().records[m.id], premiere = ancien === undefined;
     MF.progression.enregistrerReponse({ id: 'recherche-' + m.id, objectif: m.objectif }, session.indices === 0, premiere ? 100 : 0);
     MF.progression.terminerPartie('recherche', m.id, etoiles, etoiles);
+    if (session.examen) MF.examen.finMission('recherche', { reussi: true, indices: session.indices });
     session.gain = { etoiles: etoiles, premiere: premiere, ameliore: !premiere && etoiles > ancien };
   }
 
@@ -246,14 +248,16 @@
   function rendre() {
     var el = racine, m = session.mission, k = session.k;
     var reste = m.indices.length - session.indices;
-    var h = '<div class="jeu-entete"><a class="jeu-quitter" href="#/recherche" aria-label="Quitter la mission (vous pourrez la reprendre)">✕ Quitter</a>' +
+    var h = '<div class="jeu-entete"><a class="jeu-quitter" href="' + (session.examen ? '#/examen' : '#/recherche') + '" aria-label="Quitter la mission (vous pourrez la reprendre)">✕ Quitter</a>' +
       '<span class="jeu-compteur">' + (m.partieA ? 'Spotlight' : 'Mission ' + k + ' / ' + (missions().length - 1)) + '</span>' +
       '<span class="jeu-points">' + (session.indices ? pluriel(session.indices, 'indice') : '') + '</span></div>' +
       '<div class="page page-jeu"><h1 class="sr-only">Détective du Finder : ' + esc(m.titre) + '</h1>' +
       '<div class="carte carte-consigne"><p class="q-theme">' + esc(m.titre) + '</p><p class="consigne">' + esc(m.consigne) + '</p></div>' +
       (m.partieA ? spotlightHTML() : m.photos ? photosHTML() : rechercheHTML()) +
       '<div class="zone-retour" aria-live="polite">' + retourHTML() + '</div></div>';
-    if (session.reussie) {
+    if (session.reussie && session.examen) {
+      h += '<div class="barre-action"><a class="btn btn-bloc" href="#/examen">Continuer l\'examen blanc</a></div>';
+    } else if (session.reussie) {
       h += '<div class="barre-action"><div class="barre-action-rangee"><a class="btn btn-secondaire" href="#/recherche">Missions</a>' +
         (k + 1 < missions().length ? '<button type="button" class="btn btn-bloc" data-action="suivante">Mission suivante</button>' : '<a class="btn btn-bloc" href="#/accueil">Accueil</a>') + '</div></div>';
     } else {
@@ -359,6 +363,7 @@
     aUneMission: function () { return !!session; },
     /* Pour les tests automatiques uniquement. */
     _session: function () { return session; },
+    commencer: commencer,
     _commencer: commencer
   };
 })();

@@ -40,10 +40,11 @@
 
   /* ---------- Session ---------- */
 
-  function commencer(k) {
+  function commencer(k, options) {
     var etat = M().depart(k);
     session = { k: k, mission: missions()[k], etat: etat, historique: [], dossierId: etat.racines.Bureau.id,
       emplacements: false, feuille: null, message: '', verif: null, indices: 0, reussie: false, gain: null };
+    session.examen = !!(options && options.examen);
     ui().naviguer('#/atelier/mission');
   }
 
@@ -227,6 +228,7 @@
       MF.progression.enregistrerReponse({ id: 'atelier-' + m.id, objectif: m.objectif }, session.indices === 0, points);
       var ancien = stats().records[m.id];
       MF.progression.terminerPartie('finder', m.id, etoiles, etoiles);
+      if (session.examen) MF.examen.finMission('rangement', { reussi: true, indices: session.indices });
       session.gain = { etoiles: etoiles, points: points, premiere: premiere, ameliore: !premiere && etoiles > ancien };
     }
     rendre();
@@ -269,7 +271,7 @@
   function rendre() {
     var el = racine, m = session.mission, k = session.k;
     var reste = m.indices.length - session.indices;
-    var h = '<div class="jeu-entete"><a class="jeu-quitter" href="#/atelier" aria-label="Quitter la mission (vous pourrez la reprendre)">✕ Quitter</a>' +
+    var h = '<div class="jeu-entete"><a class="jeu-quitter" href="' + (session.examen ? '#/examen' : '#/atelier') + '" aria-label="Quitter la mission (vous pourrez la reprendre)">✕ Quitter</a>' +
       '<span class="jeu-compteur">Mission ' + (k + 1) + ' / ' + missions().length + '</span>' +
       '<span class="jeu-points">' + (session.indices ? pluriel(session.indices, 'indice') : '') + '</span></div>' +
       '<div class="page page-jeu"><h1 class="sr-only">Le grand rangement, mission ' + (k + 1) + '</h1>' +
@@ -277,7 +279,9 @@
       '<p class="consigne">' + esc(m.consigne) + '</p></div>' +
       finderHTML() +
       '<div class="zone-retour" aria-live="polite">' + retourHTML() + '</div></div>';
-    if (session.reussie) {
+    if (session.reussie && session.examen) {
+      h += '<div class="barre-action"><a class="btn btn-bloc" href="#/examen">Continuer l\'examen blanc</a></div>';
+    } else if (session.reussie) {
       h += '<div class="barre-action"><div class="barre-action-rangee"><a class="btn btn-secondaire" href="#/atelier">Missions</a>' +
         (k + 1 < missions().length ? '<button type="button" class="btn btn-bloc" data-action="suivante">Mission suivante</button>' : '<a class="btn btn-bloc" href="#/accueil">Accueil</a>') + '</div></div>';
     } else {
@@ -363,6 +367,7 @@
     aUneMission: function () { return !!session; },
     /* Pour les tests automatiques uniquement. */
     _session: function () { return session; },
+    commencer: commencer,
     _commencer: commencer
   };
 })();

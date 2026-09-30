@@ -488,6 +488,25 @@ table.fiche td { border-top: 1px solid var(--bordure); padding: 5px 4px; vertica
 .rs-photo .feuille-rangee { flex-wrap: wrap; margin-top: 8px; }
 .rs-photo .feuille-rangee .btn { flex: 1 1 110px; padding: 10px 8px; }
 
+/* ---------- Examen blanc et badges ---------- */
+.carte-examen .feuille-rangee { margin-top: 8px; }
+.examen-statut { margin: 4px 0 0; }
+.examen-theme { margin-top: 6px; }
+.carte-examen-accueil { border: 2px solid var(--accent); }
+.carte-badge-nouveau { display: flex; align-items: center; gap: 10px; text-decoration: none; border: 2px solid var(--etoile); color: var(--texte); }
+.carte-badge-nouveau svg { color: var(--etoile); flex: none; }
+.carte-badge-nouveau span { display: flex; flex-direction: column; }
+.lien-badges { margin: 16px 0 0; text-align: center; }
+.lien-badges a { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; font-weight: 700; text-decoration: none; }
+.liste-badges { list-style: none; margin: 0; padding: 0; }
+.badge { display: flex; gap: 12px; align-items: flex-start; margin-top: 8px; }
+.badge-icone { color: var(--texte-2); flex: none; opacity: 0.5; }
+.badge.est-obtenu .badge-icone { color: var(--etoile); opacity: 1; }
+.badge.est-obtenu { border-color: var(--etoile); }
+.badge-corps { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.badge-etat { font-size: 0.85rem; font-weight: 700; color: var(--texte-2); }
+.badge.est-obtenu .badge-etat { color: var(--juste); }
+
 /* ---------- Résultat ---------- */
 .carte-resultat { text-align: center; }
 .resultat-etoiles { margin: 4px 0; }

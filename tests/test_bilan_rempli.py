@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright
 srv=subprocess.Popen([sys.executable,"-m","http.server","8767","--bind","127.0.0.1"],cwd=SITE,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL); time.sleep(0.8)
 codes=["BUR1","BUR2","BUR3","BUR4","FIN1","FIN2","FIN3","FIN4","FIN5","FIN6","FIN7","FIN8","TYP1","TYP2","RAC","REC1","REC2","REC3","REC4"]
 etat={"app":"missionFinder","version":1,"creeLe":"2026-09-28T10:00:00Z","modifieLe":"2026-09-30T10:00:00Z","pseudo":"Maximilienne","points":3300,
- "objectifs":{c:[1,1,1,1,1,1,1,1,1,1] for c in codes},"questions":{},"activites":{"qcm":{"parties":40,"etoilesMax":3,"records":{"melange":110}},"raccourcis":{"parties":12,"etoilesMax":3,"records":{"partie":110}},"bureau":{"parties":9,"etoilesMax":2,"records":{"visite":95}},"finder":{"parties":9,"etoilesMax":3,"records":{"m1":3,"m2":3,"m9":2}},"recherche":{"parties":11,"etoilesMax":3,"records":{"s0":3,"s1":2}}},"jours":["2026-09-30"]}
+ "objectifs":{c:[1,1,1,1,1,1,1,1,1,1] for c in codes},"questions":{},"activites":{"qcm":{"parties":40,"etoilesMax":3,"records":{"melange":110}},"raccourcis":{"parties":12,"etoilesMax":3,"records":{"partie":110}},"bureau":{"parties":9,"etoilesMax":2,"records":{"visite":95}},"finder":{"parties":9,"etoilesMax":3,"records":{"m1":3,"m2":3,"m9":2}},"recherche":{"parties":11,"etoilesMax":3,"records":{"s0":3,"s1":2}},"examen":{"parties":2,"etoilesMax":2,"records":{"blanc":86}}},"badges":{"examen":"2026-09-30","raccourcis":"2026-09-29"},"jours":["2026-09-30"]}
 ok=True
 with sync_playwright() as p:
     b=p.chromium.launch()
