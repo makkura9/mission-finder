@@ -6,7 +6,7 @@ Site de révision pour smartphone : fichiers et dossiers sous macOS (préparatio
 - Aucune donnée n'est envoyée : pas de compte, pas de statistiques, pas de ressource externe.
 - La progression des élèves reste uniquement dans le navigateur de leur téléphone.
 
-**État actuel : phase 4 — Quiz express (90 questions), Révision du jour, Clavier secret (20 raccourcis), Visite du Mac (Bureau simulé), Mon bilan, Profil, Aide.**
+**État actuel : phase 5 — Quiz express (90 questions), Révision du jour, Clavier secret, Visite du Mac, Le grand rangement (9 missions sur un Finder simulé), Mon bilan, Profil, Aide.**
 
 ---
 
@@ -64,14 +64,18 @@ js/storage.js            sauvegarde de la progression (localStorage)
 js/progression.js        points, niveaux, étoiles, maîtrise, records
 js/leitner.js            répétition espacée (boîtes de Leitner), Révision du jour
 js/partie.js             règles communes des parties (points, série, étoiles, écran de résultat)
+js/atelier-modele.js     Finder simulé : dossiers, actions, vérification des 9 missions
 js/figures.js            illustrations des questions (barre des menus, Dock, fichier, Finder)
 js/modules/qcm.js        Quiz express
 js/modules/raccourcis.js Clavier secret (clavier virtuel)
 js/modules/bureau.js     Visite du Mac (Bureau simulé, Spotlight)
+js/modules/finder.js     Le grand rangement (écran du Finder simulé, missions)
 js/app.js                navigation, accueil, bilan, profil, aide
 data/questions.js        banque de questions (modifiable)
 data/raccourcis.js       les 20 raccourcis de la fiche (Clavier secret)
 data/bureau.js           légende du Bureau, applications du Dock, résultats Spotlight (Visite du Mac)
+data/missions-finder.js  les 9 missions, les fichiers fictifs de l'exercice 1, les mots reconnus (Le grand rangement)
+data/libelles-macos.js   libellés inspirés de macOS à vérifier sur un Mac du gymnase
 data/objectifs.js        objectifs d'apprentissage
 data/niveaux.js          niveaux et seuils de points
 data/textes.js           messages de retour, numéro de version
@@ -104,6 +108,9 @@ Ouvrir `data/questions.js` sur github.com, cliquer l'icône crayon, modifier le 
 | « Par galerie » | question fin-01 | Libellé exact du menu Présentation dans macOS 15 ? (conservé en attendant) |
 | Menus « Fichier, Édition, Affichage » d'Excel | figure de la question bur-01 | Libellés exacts dans Excel pour Mac ? (conservés en attendant) |
 | « Ce Mac » | question rec-07 | Libellé de l'étendue de la recherche avancée (⌘ F) |
+| « Placer dans la Corbeille » | Le grand rangement (`data/libelles-macos.js`) | « Corbeille » avec ou sans majuscule dans le menu du Finder ? |
+| « dossier sans titre » | Le grand rangement | Nom exact d'un nouveau dossier ? |
+| Types « Document PDF », « Image JPEG », « Image PNG », « Archive ZIP », « Page web (HTML) » | « Lire les informations » de l'atelier | Libellés exacts du champ « Type » ? |
 | Lieu de prise de vue d'une photo | phase 6 (mission « photos mystères ») | Visible dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ? Aucune question ne l'affirme pour l'instant. |
 
 ### Points à vérifier sur un téléphone

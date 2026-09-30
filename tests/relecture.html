@@ -63,10 +63,13 @@
 <p class="commandes"><label><input type="checkbox" id="voir-validees"> Afficher aussi les questions déjà validées (phase 2)</label></p>
 <div id="liste"></div>
 <div id="phase4"></div>
+<div id="phase5"></div>
 <script src="../data/objectifs.js"></script>
 <script src="../data/questions.js"></script>
 <script src="../data/raccourcis.js"></script>
 <script src="../data/bureau.js"></script>
+<script src="../data/missions-finder.js"></script>
+<script src="../data/libelles-macos.js"></script>
 <script src="../js/ui.js"></script>
 <script src="../js/figures.js"></script>
 <script>
@@ -89,7 +92,7 @@
     ? QUESTIONS.length + ' questions, dont ' + nouvelles + ' à relire (badge « À relire »). Bonne(s) réponse(s) en vert (✓). ' +
       'Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. Cochez « OK » ou notez la correction (identifiant de la question + texte corrigé).'
     : 'Les ' + QUESTIONS.length + ' questions du Quiz express sont validées (cochez la case pour les afficher). ') +
-    ' À relire en phase 4 : les textes de « Visite du Mac » et de « Clavier secret », ci-dessous.';
+    ' Les textes de « Visite du Mac » et de « Clavier secret » sont validés (phase 4). À relire en phase 5 : « Le grand rangement », ci-dessous.';
   function afficher() {
   const voirValidees = document.getElementById('voir-validees').checked;
   let h = '';
@@ -116,7 +119,7 @@
 
   // Phase 4 : textes des modules « Visite du Mac » et « Clavier secret »
   (function () {
-    let h = '<h2>Visite du Mac — légende du Bureau (tutoriel, p. 1) <span class="badge badge-nouvelle">À relire</span></h2>' +
+    let h = '<h2>Visite du Mac — légende du Bureau (tutoriel, p. 1) <span class="badge badge-validee">Validée</span></h2>' +
       '<table class="relire"><thead><tr><th>Légende</th><th>Consigne « Touchez… »</th><th>Si l\'élève le touche par erreur : « Vous avez touché… »</th><th>Rappel de position (si confondu)</th><th>Explication</th></tr></thead><tbody>';
     BUREAU.elements.forEach(e => {
       h += '<tr><td><b>' + esc(e.lettre) + '. ' + esc(e.nom) + '</b></td><td>' + esc(e.consigne) + '</td><td>' + esc(e.touche) + '</td><td>' + esc(e.ou) + '</td><td>' + esc(e.explication) + '</td></tr>';
@@ -131,7 +134,7 @@
       BUREAU.spotlight.resultats.map(x => esc(x.nom) + ' (' + esc(x.genre) + ')').join(', ') +
       '. — Explication : « Spotlight s\'ouvre avec la loupe en haut à droite de l\'écran (ou ⌘ Espace) : écrivez « Finder », puis touchez l\'application dans les résultats. » — Réussite : « Le Finder est maintenant l\'application active : son nom apparaît en gras dans la barre des menus. » — S\'il touche le Finder dans le Dock : « Le Finder s\'ouvrirait aussi depuis le Dock, mais ici, utilisez Spotlight. »</td></tr>' +
       '</tbody></table>';
-    h += '<h2>Clavier secret — les 20 raccourcis (fiche, formulation exacte) <span class="badge badge-nouvelle">À relire</span></h2>' +
+    h += '<h2>Clavier secret — les 20 raccourcis (fiche, formulation exacte) <span class="badge badge-validee">Validée</span></h2>' +
       '<table class="relire"><thead><tr><th>Raccourci</th><th>Texte affiché</th><th>Souvent confondu avec (distracteurs)</th></tr></thead><tbody>';
     const combi = r => r.touches.join(' ') + (r.puis ? ' puis ' + r.puis : '');
     RACCOURCIS.forEach(r => {
@@ -142,6 +145,33 @@
       '« La touche finale est juste ; vérifiez les touches de modification (⌘, ⇧, ⌥). », « Les touches de modification sont justes ; changez la touche finale. », ' +
       '« Presque : cette capture se fait en deux temps. » ; si l\'élève compose ⌘ Espace : « cette combinaison ouvre Spotlight ».</p>';
     document.getElementById('phase4').innerHTML = h;
+  })();
+
+  // Phase 5 : « Le grand rangement »
+  (function () {
+    const nomDe = id => ATELIER.fichiers.find(f => f.id === id).nom;
+    let h = '<h2>Le grand rangement — les 9 missions <span class="badge badge-nouvelle">À relire</span></h2>' +
+      '<table class="relire"><thead><tr><th>Mission</th><th>Contexte et consigne</th><th>Indice 1</th><th>Indice 2 (le dernier)</th></tr></thead><tbody>';
+    ATELIER.missions.forEach((m, k) => {
+      h += '<tr><td><b>' + (k + 1) + '. ' + esc(m.titre) + '</b><br>' + esc(m.objectif) + '</td><td>' + esc(m.contexte) + '<br><b>' + esc(m.consigne) + '</b></td><td>' +
+        esc(m.indices[0]) + '</td><td>' + esc(m.indices[1]) + '</td></tr>';
+    });
+    h += '</tbody></table>' +
+      '<h2>Le grand rangement — fichiers fictifs <span class="badge badge-nouvelle">À relire</span></h2>' +
+      '<table class="relire"><thead><tr><th>Fichier</th><th>Rangement attendu</th><th>Remarque</th></tr></thead><tbody>';
+    ATELIER.fichiers.forEach(f => {
+      const dans = ATELIER.archive.contenu.includes(f.id) ? 'dans ' + ATELIER.archive.nom : Object.keys(ATELIER.depart).find(l => ATELIER.depart[l].includes(f.id));
+      h += '<tr><td>' + esc(f.nom) + '<br><small>(' + esc(dans) + ')</small></td><td>' + esc(f.categorie || (f.id === 'h1' || f.id === 'n1' ? '1C (mission bonus)' : '—')) + '</td><td>' +
+        (f.doublonDe ? 'doublon de « ' + esc(nomDe(f.doublonDe)) + ' »' : '') + (f.aRenommer ? 'nom à rendre explicite (aperçu : ' + esc(f.apercu) + ')' : '') + '</td></tr>';
+    });
+    h += '</tbody></table><table class="relire"><tbody>' +
+      Object.keys(ATELIER.motsCles).map(c => '<tr><th>Mots reconnus (' + esc(c) + ')</th><td>' + ATELIER.motsCles[c].map(esc).join(', ') + ' (sans tenir compte des majuscules ni des accents)</td></tr>').join('') +
+      '<tr><th>Libellés « à vérifier » (data/libelles-macos.js)</th><td>' + Object.values(LIBELLES_MACOS.actions).map(esc).join(' · ') + ' — nouveau dossier : « ' + esc(LIBELLES_MACOS.nouveauDossierNom) + ' » — types : ' +
+      Object.values(LIBELLES_MACOS.types).map(esc).join(', ') + '</td></tr>' +
+      '<tr><th>Messages de la vérification (exemples)</th><td>« Presque : vérifiez les majuscules et les accents de « … ». » · « « … » existe, mais pas au bon endroit : il doit être dans « … ». » · « Plage : il manque 1 fichier. » · « Ville : 1 fichier n\'a rien à faire ici. » · « Il reste 1 doublon dans « Exercice_finder ». » · « Pour 1 fichier, vous avez gardé la copie et jeté l\'original… » · « Plage : une image porte encore un nom automatique. » · « « Montagne » n\'est pas encore compressé. »</td></tr>' +
+      '<tr><th>Points et étoiles</th><td>100 points la première fois qu\'une mission est réussie (0 ensuite, pour éviter de « farmer ») ; ★★★ sans indice, ★★ avec un indice, ★ avec le dernier. Aucune pénalité pour une vérification ratée.</td></tr>' +
+      '</tbody></table>';
+    document.getElementById('phase5').innerHTML = h;
   })();
 </script>
 </body>
