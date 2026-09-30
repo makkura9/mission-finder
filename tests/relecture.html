@@ -31,11 +31,31 @@
   .fig-fichier { display: flex; align-items: center; gap: 3mm; }
   .fig-fichier svg { width: 22px; height: 27px; }
   .fig-fichier-nom { font-family: "DejaVu Sans Mono", monospace; font-weight: 700; }
+  .fig-finder, .fig-laterale { border: 1px solid #aaa; border-radius: 5px; overflow: hidden; font-size: 7.5pt; max-width: 85mm; }
+  .fig-finder-barre { display: flex; gap: 6px; padding: 2px 5px; background: #eee; border-bottom: 1px solid #ccc; }
+  .fig-feux { display: none; }
+  .fig-colonnes { display: flex; }
+  .fig-col { flex: 0 1 auto; max-width: 42%; min-width: 0; list-style: none; margin: 0; padding: 2px; border-right: 1px solid #ddd; }
+  .fig-col:last-child { flex: 1 1 0; max-width: none; border-right: 0; }
+  .fig-el { display: flex; align-items: flex-start; gap: 3px; padding: 0 3px; border-radius: 3px; }
+  .fig-el svg { width: 10px; height: 10px; flex: none; margin-top: 1px; }
+  .fig-el.est-choisi { background: #0A64D6; color: #fff; }
+  .fig-el.est-parent { background: #ddd; }
+  .fig-laterale { max-width: 45mm; padding: 2px 4px; background: #f3f3f3; }
+  .fig-laterale ul { list-style: none; margin: 0; padding: 0; }
+  .fig-section { margin: 2px 0 0; font-weight: 700; color: #666; font-size: 7pt; }
+  .badge { font-weight: 700; padding: 0 1.5mm; border-radius: 2px; }
+  .badge-nouvelle { background: #FCE8E6; color: #8A1C14; }
+  .badge-validee { background: #E6F4EA; color: #1A7536; }
+  .commandes { margin: 0 0 4mm; font-size: 9pt; }
+  .commandes button { font: inherit; padding: 1mm 3mm; }
+  @media print { .commandes { display: none; } }
 </style>
 </head>
 <body>
 <h1>Mission Finder — questions à relire</h1>
 <p class="intro" id="intro"></p>
+<p class="commandes"><label><input type="checkbox" id="voir-validees"> Afficher aussi les questions déjà validées (phase 2)</label></p>
 <div id="liste"></div>
 <script src="../data/objectifs.js"></script>
 <script src="../data/questions.js"></script>
@@ -44,13 +64,22 @@
 <script>
   const esc = MF.ui.esc;
   const TYPES = { unique: 'Choix unique', multiple: 'Choix multiple', vraifaux: 'Vrai ou faux', ranger: 'Où ranger ?' };
+  // Questions relues et validées par l'enseignant (phase 2, 30.09.2026).
+  const VALIDEES = ['bur-01', 'bur-02', 'bur-03', 'fin-01', 'fin-02', 'fin-03', 'fin-04', 'fin-05', 'fin-06', 'fin-07',
+    'typ-01', 'typ-02', 'typ-03', 'typ-04', 'rac-01', 'rac-02', 'rac-03', 'rec-01', 'rec-02', 'rec-03'];
+  const nouvelles = QUESTIONS.filter(q => !VALIDEES.includes(q.id)).length;
   document.getElementById('intro').textContent =
-    QUESTIONS.length + ' questions. Bonne(s) réponse(s) en vert (✓). Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. ' +
-    'Cochez « OK » ou notez la correction (numéro de la question + texte corrigé).';
+    QUESTIONS.length + ' questions, dont ' + nouvelles + ' à relire (badge « À relire »). Bonne(s) réponse(s) en vert (✓). ' +
+    'Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. Cochez « OK » ou notez la correction (identifiant de la question + texte corrigé).';
+  function afficher() {
+  const voirValidees = document.getElementById('voir-validees').checked;
   let h = '';
   QUESTIONS.forEach((q, n) => {
+    const validee = VALIDEES.includes(q.id);
+    if (validee && !voirValidees) return;
     const obj = OBJECTIFS.liste.find(o => o.code === q.objectif);
     h += '<div class="q"><div class="tete"><span><b>' + (n + 1) + '. ' + esc(q.id) + '</b> · ' + esc(q.objectif) + ' ' + esc(obj.court) +
+      ' <span class="badge ' + (validee ? 'badge-validee">Validée' : 'badge-nouvelle">À relire') + '</span>' +
       '</span><span>' + TYPES[q.type] + ' · difficulté ' + q.difficulte + '</span></div>' +
       '<p class="enonce">' + esc(q.enonce) + '</p>' + MF.figures.rendre(q.figure) + '<ol type="A">';
     q.propositions.forEach((p, i) => {
@@ -62,6 +91,9 @@
       '<p class="cases">☐ OK &nbsp;&nbsp; ☐ À corriger : ………………………………………………………………………………</p></div>';
   });
   document.getElementById('liste').innerHTML = h;
+  }
+  document.getElementById('voir-validees').addEventListener('change', afficher);
+  afficher();
 </script>
 </body>
 </html>

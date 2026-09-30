@@ -75,14 +75,68 @@
       '<span class="fig-fichier-nom">' + esc(f.nom) + '</span></figure>';
   }
 
+  /* Petites icônes génériques (dossier, nuage, ordinateur) pour le Finder simulé. */
+  var MINI = {
+    dossier: '<path d="M1.5 4.5a1 1 0 011-1h3.6l1.4 1.5h6a1 1 0 011 1v6.5a1 1 0 01-1 1h-11a1 1 0 01-1-1z" fill="#5AA9E6" stroke="#2F7FC1" stroke-width=".8"/>',
+    nuage: '<path d="M4.5 12.5a3 3 0 01-.3-6 4 4 0 017.6-1 2.7 2.7 0 01.7 5.3v.2z" fill="none" stroke="#5F6B73" stroke-width="1.2" stroke-linejoin="round"/>',
+    ordinateur: '<rect x="2.5" y="3.5" width="11" height="7.5" rx=".8" fill="none" stroke="#5F6B73" stroke-width="1.2"/><path d="M1 13h14" stroke="#5F6B73" stroke-width="1.4" stroke-linecap="round"/>'
+  };
+  function mini(nom) {
+    return '<svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false">' + MINI[nom] + '</svg>';
+  }
+
+  /* Fenêtre du Finder en présentation par colonnes :
+     { type:"colonnes", titre:"Bureautique", colonnes:[ { elements:["1C"], choisi:"1C" }, … ] }
+     Le dernier élément choisi est surligné en bleu, les précédents en gris (comme dans le Finder). */
+  function colonnes(f) {
+    var cols = f.colonnes || [];
+    var dernier = -1;
+    cols.forEach(function (c, i) { if (c.choisi) dernier = i; });
+    var chemin = cols.filter(function (c) { return c.choisi; }).map(function (c) { return c.choisi; });
+    var desc = 'Fenêtre du Finder en présentation par colonnes. ' + cols.map(function (c, i) {
+      return 'Colonne ' + (i + 1) + ' : ' + c.elements.join(', ') + (c.choisi ? ' (sélectionné : ' + c.choisi + ')' : '');
+    }).join('. ') + '.';
+    var h = '<figure class="figure" role="img" aria-label="' + esc(desc) + '"><div class="fig-finder" aria-hidden="true">' +
+      '<div class="fig-finder-barre"><span class="fig-feux"><i></i><i></i><i></i></span><b>' + esc(f.titre || chemin[chemin.length - 1] || '') + '</b></div>' +
+      '<div class="fig-colonnes">';
+    cols.forEach(function (c, i) {
+      h += '<ul class="fig-col">';
+      c.elements.forEach(function (e) {
+        var cl = e === c.choisi ? (i === dernier ? ' est-choisi' : ' est-parent') : '';
+        h += '<li class="fig-el' + cl + '">' + mini('dossier') + '<span>' + esc(e) + '</span></li>';
+      });
+      h += '</ul>';
+    });
+    return h + '</div></div><figcaption>Fenêtre du Finder, présentation par colonnes.</figcaption></figure>';
+  }
+
+  /* Barre latérale du Finder :
+     { type:"barreLaterale", favoris:[…], emplacements:[…], choisi:"Bureau" (facultatif) } */
+  function barreLaterale(f) {
+    function ligne(nom, icone) {
+      return '<li class="fig-el' + (nom === f.choisi ? ' est-parent' : '') + '">' + mini(icone) + '<span>' + esc(nom) + '</span></li>';
+    }
+    var desc = 'Barre latérale du Finder. Favoris : ' + f.favoris.join(', ') + '. Emplacements : ' + f.emplacements.join(', ') + '.' +
+      (f.choisi ? ' Élément sélectionné : ' + f.choisi + '.' : '');
+    var h = '<figure class="figure" role="img" aria-label="' + esc(desc) + '"><div class="fig-laterale" aria-hidden="true">' +
+      '<p class="fig-section">Favoris</p><ul>';
+    f.favoris.forEach(function (n) { h += ligne(n, 'dossier'); });
+    h += '</ul><p class="fig-section">Emplacements</p><ul>';
+    f.emplacements.forEach(function (n) { h += ligne(n, /onedrive/i.test(n) ? 'nuage' : 'ordinateur'); });
+    return h + '</ul></div><figcaption>Barre latérale du Finder (d\'après le tutoriel, p. 2).</figcaption></figure>';
+  }
+
   MF.figures = {
     esc: esc,
     iconeFichier: iconeFichier,
+    TYPES: ['barreMenus', 'dock', 'fichier', 'colonnes', 'barreLaterale'],
     rendre: function (f) {
       if (!f) return '';
       if (f.type === 'barreMenus') return barreMenus(f);
       if (f.type === 'dock') return dock(f);
       if (f.type === 'fichier') return fichier(f);
+      if (f.type === 'colonnes') return colonnes(f);
+      if (f.type === 'barreLaterale') return barreLaterale(f);
       return '';
     }
   };

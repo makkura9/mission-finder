@@ -30,6 +30,9 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 | Formulaire de congé (ex. 1) | fichier fictif `demande_conge.pdf` dans Téléchargements, à ranger dans `Documents/Formulaires` |
 | Charte graphique | « Léman » (bleu canard `#0D6B73` + corail `#C03E0A`, étoiles ambre `#B86E00`), mode sombre automatique ; jetons dans `css/style.css`, contrastes AA vérifiés |
 | Système de score | Validé, implémenté dans `js/progression.js` et `js/modules/qcm.js` (voir section 4) |
+| Menu Pomme (figures) | Pomme générique dessinée : **validé** (phase 3) |
+| Libellés iPhone / Android (Aide) | Délégué à Claude (phase 3) : l'Aide garde les deux variantes (« Sur l'écran d'accueil » ou « Ajouter à l'écran d'accueil » ; « Ajouter à l'écran d'accueil » ou « Installer l'application ») |
+| Répétition espacée (phase 3) | Boîtes 1 à 5 ; retour après 0, 1, 3, 7, 14 jours (`js/leitner.js`) ; Révision du jour = 5 à 10 questions, d'abord les ratées, complétées par des nouvelles, thèmes entrelacés ; Quiz express = d'abord questions à revoir ou jamais vues |
 
 ## 3. Règles impératives (rappel du cahier des charges)
 
@@ -43,7 +46,7 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 ## 4. Architecture et conventions techniques
 
 - HTML + CSS + JavaScript « vanilla », **sans module ES** (`<script type="module">` est bloqué en `file://`), sans framework, sans compilation, sans `npm` pour le site, **sans aucune ressource externe** (CDN, polices web, analytics).
-- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.figures`, `MF.qcm`).
+- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.leitner`, `MF.figures`, `MF.qcm`).
 - Données dans `data/*.js` (`window.QUESTIONS`, `window.OBJECTIFS`, `window.NIVEAUX`, `window.TEXTES`), **jamais** de `fetch` de JSON : le site doit marcher ouvert par double-clic.
 - **Chemins relatifs uniquement** (`css/style.css`, jamais `/css/…`).
 - Navigation par ancre : `#/accueil`, `#/qcm`, `#/qcm/partie`, `#/qcm/resultat`, `#/bilan`, `#/profil`, `#/aide` (routeur dans `js/app.js`).
@@ -51,23 +54,28 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 - Sauvegarde : `localStorage`, clé unique `missionFinder.v1`, objet avec `app` et `version` (migrations dans `js/storage.js`) ; toute lecture/écriture en `try/catch` ; repli en mémoire + bandeau si stockage indisponible ; export/import par code `MF1-` + base64 (UTF-8).
 - Score : 10 points du premier coup, 5 au 2e essai, 0 ensuite ; bonus de série +2 par réponse juste **du premier coup** consécutive (dès la 2e), +10 max par partie ; étoiles sur points de base / (10 × n) : ★ ≥ 50 %, ★★ ≥ 75 %, ★★★ = 100 % ; missions (phases 5-6) : 100 points, ★★★ sans indice, ★★ avec indice, ★ avec le dernier indice. Maîtrise d'un objectif : % de justes du premier coup sur les 10 dernières réponses, « à découvrir » sous 3 réponses ; maîtrise d'un thème = moyenne des objectifs évalués. Niveaux dans `data/niveaux.js`.
 - QCM : 1re erreur → réponse marquée ✗ + explication ciblée (`erreurs[i]`), bonne réponse **non** révélée, 2e essai ; vrai/faux : un seul essai ; ensuite bonne réponse + explication. Les points sont ajoutés à chaque réponse (rien n'est perdu si l'élève quitte).
-- Illustrations : recréations vectorielles simplifiées (`js/figures.js`), aucun logo : menu Pomme = pomme générique, applications = carrés de couleur avec abréviation.
+- Illustrations : recréations vectorielles simplifiées (`js/figures.js` : `barreMenus`, `dock`, `fichier`, `colonnes`, `barreLaterale`), aucun logo : menu Pomme = pomme générique, applications = carrés de couleur avec abréviation.
+- Révision du jour : pas de nouvelle route ; `MF.qcm.demarrer('revision')` lance une partie du Quiz express en mode « revision ».
 - Mobile d'abord : 360 px de référence, colonne 480 px max, cibles tactiles ≥ 44 px, champs ≥ 16 px, aucun survol ni glisser-déposer indispensable.
 - Numéro de version affiché en bas de l'accueil et de l'aide : `window.TEXTES.version` dans `data/textes.js` — **le mettre à jour à chaque phase** (l'enseignant s'en sert pour vérifier la mise en ligne).
 
 ## 5. Tests (à lancer avant chaque livraison)
 
 ```
-node tests/valider-donnees.js          # champs, id uniques, objectifs, ⌘ Y exclu…
+node tests/valider-donnees.js          # champs, id uniques, objectifs, ⌘ Y exclu, raccourcis de la fiche, ≥ 80 questions…
+node tests/test-leitner.js             # boîtes de Leitner, délais, Révision du jour, entrelacement des thèmes
 python3 tests/verifier_textes.py       # vouvoiement, chemins absolus, ressources externes, poids
 python3 tests/test_phase2.py           # Playwright : partie complète, sauvegarde, export/import, stockage bloqué, file://, 4 tailles
-python3 tests/test_bilan_rempli.py     # « Mon bilan » rempli : aucun débordement
+python3 tests/test_phase3.py           # Playwright : Révision du jour de bout en bout, les 90 questions à 320 et 390 px
+python3 tests/test_bilan_rempli.py     # « Mon bilan » rempli : aucun débordement, ≤ 600 px de haut dès 360 px
 ```
 
-Les tests Playwright ont besoin de `pip install playwright` et d'un Chromium. **Non vérifié** dans
-l'environnement cloud par défaut : si le navigateur ne peut pas être installé, le dire clairement à
-l'enseignant et lui donner les vérifications manuelles équivalentes. `tests/relecture.html` produit le
-document de relecture des questions (ouvrir dans Chromium, imprimer en PDF).
+Environnement cloud (vérifié en phase 3) : Chromium est préinstallé (`/opt/pw-browsers`, révision 1194).
+Installer la version de Playwright correspondante : `pip install playwright==1.56.0` (la dernière version
+cherche un autre Chromium ; ne pas lancer `playwright install`). Si le navigateur ne peut pas être lancé,
+le dire clairement à l'enseignant et lui donner les vérifications manuelles équivalentes.
+`tests/relecture.html` produit le document de relecture des questions (en ligne :
+https://makkura9.github.io/mission-finder/tests/relecture.html ; imprimer en PDF).
 
 ## 6. Livraison à l'enseignant (nouveau flux avec Claude Code)
 
@@ -82,8 +90,8 @@ document de relecture des questions (ouvrir dans Chromium, imprimer en PDF).
 |---|---|
 | 0 Cadrage | ✅ validée |
 | 1 GitHub + Pages | ✅ validée |
-| 2 Squelette + Quiz express (20 questions pilotes) | ✅ en ligne ; **en attente** : relecture des 20 questions par l'enseignant et réponses aux points ouverts ci-dessous |
-| 3 Banque QCM ≥ 80 questions + fichier de relecture + Leitner / Révision du jour | à faire (les boîtes de Leitner sont déjà mises à jour dans `etat.questions[id].boite`, 1 à 5) |
+| 2 Squelette + Quiz express (20 questions pilotes) | ✅ validée (20 questions relues : toutes OK) |
+| 3 Banque QCM (90 questions) + fichier de relecture + Leitner / Révision du jour + bilan compacté | livrée sur une branche ; **en attente** : relecture des 70 nouvelles questions (badge « À relire » dans `tests/relecture.html`) et « validé » |
 | 4 Raccourcis + Bureau | à faire |
 | 5 Atelier fichiers | à faire |
 | 6 Recherche | à faire (créer `data/libelles-macos.js`) |
@@ -92,9 +100,20 @@ document de relecture des questions (ouvrir dans Chromium, imprimer en PDF).
 
 ## 8. Points ouverts (réponses attendues de l'enseignant)
 
+L'enseignant n'est pas au gymnase (phase 3) : « faire au mieux ». Les libellés ci-dessous sont conservés
+et restent dans la liste « à vérifier » du README ; aucune nouvelle question ne repose sur un libellé incertain.
+
 1. Libellé « Par galerie » (menu Présentation, macOS 15) — question fin-01.
 2. Menus « Fichier, Édition, Affichage » d'Excel pour Mac — figure de bur-01.
-3. Menu Pomme dessiné comme une pomme générique : choix à confirmer.
-4. iPhone : progression de l'icône de l'écran d'accueil séparée de celle de Safari (écrit dans l'Aide, à confirmer) ; libellés exacts « Sur l'écran d'accueil » (iOS) et « Ajouter à l'écran d'accueil / Installer l'application » (Android).
-5. Phase 6 : le lieu de prise de vue d'une photo s'affiche-t-il dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ?
-6. Sources non lues directement : les PDF du cours n'ont jamais été lus (seulement la transcription de l'annexe A). Signaler toute incertitude qui en découle.
+3. Phase 6 : le lieu de prise de vue d'une photo s'affiche-t-il dans « Lire les informations » (⌘ I) du Finder, ou seulement dans l'inspecteur d'Aperçu ? Les questions REC4 disent seulement « dans les métadonnées ».
+
+## 9. Sources du cours (PDF lus en phase 3)
+
+Les trois documents (tutoriel 4 pages, fiche des raccourcis, énoncés) ont été lus en phase 3, captures
+comprises. L'annexe A du cahier des charges est fidèle. Constats :
+
+1. Tutoriel p. 1 : la capture du Bureau a le fond d'écran de macOS Catalina ; les captures du Finder (p. 2-3) ont le style des versions récentes. Aucun PDF n'indique « macOS 15 ».
+2. Tutoriel p. 1 : ouverts (point sous l'icône) = Finder, Safari, Word, une application à jumelles (non identifiée), PowerPoint ; application active = Finder. Une icône « Homedir » (non légendée) est aussi sur le Bureau.
+3. Tutoriel p. 2 : barre latérale = Favoris (AirDrop, Récents, Applications, Documents, « Optimisation de rec… », Téléchargements, Bureau), Emplacements (lm056341, OneDrive), Tags.
+4. Tutoriel p. 3 : l'utilitaire ZIP est nommé « Archive Utility » (nom anglais) ; horaire « mon_horaire_2025_2026 » (le site suit la décision 2026_2027). Tutoriel p. 4 : chemins écrits « 1C\Bureautique\Word » ; icône OneDrive (nuage) dans la barre des menus pour vérifier la synchronisation.
+5. Fiche des raccourcis : « Mac OS X », septembre 2025 ; ⌘ Y (« Répéter une action ») y figure mais reste exclu du site.

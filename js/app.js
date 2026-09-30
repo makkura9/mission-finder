@@ -30,6 +30,19 @@
     return h + '</div>';
   }
 
+  /* Carte « Révision du jour » (boîtes de Leitner, js/leitner.js). */
+  function carteRevision() {
+    var r = MF.leitner.resume();
+    var texte;
+    if (r.aRevoir > 0) texte = '<b>' + r.aRevoir + ' question' + (r.aRevoir > 1 ? 's' : '') + ' à revoir aujourd\'hui.</b> Les questions ratées reviennent en priorité.';
+    else if (r.vues > 0) texte = '✓ Rien à revoir aujourd\'hui : les questions réussies reviendront dans quelques jours. Vous pouvez en découvrir de nouvelles.';
+    else texte = 'Répondez à quelques questions : celles que vous ratez reviendront ici en priorité.';
+    var n = Math.min(10, Math.max(5, r.aRevoir));
+    return '<div class="carte carte-revision"><p class="revision-titre">' + ui.icone('revision', 22) + ' Révision du jour</p>' +
+      '<p class="petit">' + texte + '</p>' +
+      '<button type="button" class="btn btn-bloc" data-action="revision">Commencer · ' + n + ' questions</button></div>';
+  }
+
   /* ---------- Accueil ---------- */
   function ecranAccueil(el) {
     var e = etat();
@@ -40,8 +53,7 @@
       '<p class="intro">Révisez le TE1 : fichiers et dossiers sous macOS.</p>' +
       blocNiveau() +
       (jours > 0 ? '<p class="semaine">✓ ' + jours + ' jour' + (jours > 1 ? 's' : '') + ' de révision cette semaine</p>' : '') +
-      '<div class="carte carte-revision est-inactive"><p class="revision-titre">' + ui.icone('revision', 22) + ' Révision du jour</p>' +
-      '<p class="petit">Les questions à revoir, tous thèmes mélangés.</p><p><span class="puce puce-bientot">Bientôt disponible</span></p></div>' +
+      carteRevision() +
       '<h2 class="titre-section">Activités</h2><ul class="liste-activites">';
     ACTIVITES.forEach(function (a) {
       var st = e.activites[a.id];
@@ -60,6 +72,7 @@
     });
     h += '</ul><p class="version">Version : ' + ui.esc(window.TEXTES.version) + '</p></div>';
     el.innerHTML = h;
+    el.querySelector('[data-action="revision"]').addEventListener('click', function () { MF.qcm.demarrer('revision'); });
   }
 
   /* ---------- Mon bilan (conçu pour tenir sur une capture d'écran) ---------- */
@@ -71,8 +84,8 @@
       '<h2 class="titre-section">Étoiles par activité</h2><div class="bilan-activites">';
     ACTIVITES.forEach(function (a) {
       var st = e.activites[a.id];
-      h += '<div class="bilan-ligne"><span>' + ui.esc(a.nom) + '</span>' +
-        (a.actif ? ui.etoiles(st ? st.etoilesMax : 0, 14) : '<span class="petit">bientôt</span>') + '</div>';
+      h += '<span class="bilan-act">' + ui.esc(a.nom) + ' ' +
+        (a.actif ? ui.etoiles(st ? st.etoilesMax : 0, 14) : '<span class="bilan-bientot">bientôt</span>') + '</span>';
     });
     h += '</div><h2 class="titre-section">Maîtrise par objectif</h2>';
     window.OBJECTIFS.themes.forEach(function (t) {
@@ -85,13 +98,13 @@
         h += '<p class="bilan-sous">';
         objs.forEach(function (o) {
           var m = MF.progression.maitriseObjectif(o.code);
-          h += '<span class="bilan-obj">' + ui.esc(o.court) + ' <b>' + (m.pct === null ? '—' : m.pct + ' %') + '</b></span> ';
+          h += '<span class="bilan-obj"><span>' + ui.esc(o.court) + '</span> <b>' + (m.pct === null ? '—' : m.pct + ' %') + '</b></span> ';
         });
         h += '</p>';
       }
       h += '</div>';
     });
-    h += '<p class="bilan-note">« — » : à découvrir (moins de 3 réponses). Maîtrise : réponses justes du premier coup parmi les 10 dernières.</p></div>';
+    h += '<p class="bilan-note">Maîtrise : justes du 1er coup sur les 10 dernières réponses. « — » : moins de 3 réponses.</p></div>';
     el.innerHTML = h;
   }
 
@@ -211,6 +224,7 @@
       '<li>Plusieurs réponses justes du premier coup à la suite : bonus de série (+2 à chaque fois, jusqu\'à +10 par partie).</li>' +
       '<li>Étoiles d\'une partie : ★ dès 50 % des points possibles, ★★ dès 75 %, ★★★ à 100 % (tout juste du premier coup).</li>' +
       '<li>La <b>maîtrise</b> d\'un objectif compte vos réponses justes du premier coup parmi les 10 dernières.</li>' +
+      '<li><b>Révision du jour</b> : les questions ratées reviennent en priorité. Une question réussie du premier coup revient plus tard : après 1 jour, puis 3, 7 et 14 jours.</li>' +
       '<li>Pas de chronomètre : prenez le temps de lire les explications.</li></ul></details>' +
 
       '<details class="carte"><summary>Où est enregistrée ma progression ?</summary>' +

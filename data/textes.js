@@ -3,7 +3,7 @@
    Règle : toujours vouvoyer les élèves. */
 
 window.TEXTES = {
-  version: "phase 2 · 30.09.2026",
+  version: "phase 3 · 30.09.2026",
 
   juste: [
     "Juste !",
