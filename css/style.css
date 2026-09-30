@@ -1,0 +1,101 @@
+/* Mission Finder — feuille de style
+   Charte B « Léman » (validée en phase 0). Contrastes vérifiés WCAG 2.1 AA.
+   Aucune ressource externe : police système du téléphone. */
+
+:root {
+  --fond: #F7F5F1;
+  --carte: #FFFFFF;
+  --texte: #1C2322;
+  --texte-2: #545F5D;
+  --principal: #0D6B73;
+  --sur-principal: #FFFFFF;
+  --principal-doux: #E1F0F0;
+  --accent: #C03E0A;
+  --etoile: #B86E00;
+  --piste: #E2DED6;
+  --juste: #1A7536;
+  --juste-fond: #E6F4EA;
+  --faux: #B3261E;
+  --faux-fond: #FCE8E6;
+  --bordure: #E0DBD2;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #0F1514;
+    --carte: #1A2221;
+    --texte: #E7EEEC;
+    --texte-2: #A2B1AE;
+    --principal: #5CCFCF;
+    --sur-principal: #062222;
+    --principal-doux: #173333;
+    --accent: #FF9A68;
+    --etoile: #F2B53A;
+    --piste: #2D3836;
+    --juste: #6FD08C;
+    --juste-fond: #16301F;
+    --faux: #FF8E84;
+    --faux-fond: #3A1C1A;
+    --bordure: #2D3836;
+  }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--fond);
+  color: var(--texte);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+}
+
+.page {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: max(24px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
+}
+
+.entete { text-align: center; margin-bottom: 8px; }
+.logo { display: block; margin: 8px auto 4px; }
+h1 { font-size: 1.75rem; margin: 4px 0; color: var(--principal); }
+.sous-titre { margin: 0; color: var(--texte-2); }
+
+.carte {
+  background: var(--carte);
+  border: 1px solid var(--bordure);
+  border-radius: 16px;
+  padding: 16px;
+  margin-top: 16px;
+}
+.carte-principale { border: 2px solid var(--principal); }
+.carte h2 { margin: 0 0 6px; font-size: 1.25rem; color: var(--accent); }
+.carte p { margin: 0; }
+
+.carte h2.titre-section {
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--texte-2);
+}
+
+.liste-activites { list-style: none; margin: 0; padding: 0; }
+.liste-activites li {
+  display: flex;
+  flex-direction: column;
+  padding: 10px 0;
+  border-top: 1px solid var(--bordure);
+}
+.liste-activites li:first-child { border-top: 0; }
+.liste-activites span { color: var(--texte-2); font-size: 0.9rem; }
+
+.pied { margin-top: 24px; text-align: center; color: var(--texte-2); font-size: 0.85rem; }
+.pied p { margin: 4px 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
