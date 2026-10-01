@@ -73,7 +73,7 @@ with sync_playwright() as p:
     print("1. Accueil et liste des missions")
     ctx, pg = nouvelle_page(b)
     pg.goto(BASE + "#/accueil"); pg.wait_for_timeout(200)
-    verifier(pg.locator('a.carte-activite[href="#/recherche"]').count() == 1 and pg.locator('.carte-activite.est-inactive').count() == 0, "les 5 activités sont ouvertes")
+    verifier(pg.locator('a.carte-activite[href="#/recherche"]').count() == 1 and pg.locator('.liste-activites .est-inactive').count() == 0, "les 5 activités sont ouvertes")
     pg.goto(BASE + "#/recherche"); pg.wait_for_timeout(150)
     verifier(pg.locator(".carte-mission").count() == 11, "Spotlight + 10 missions")
     pg.screenshot(path=f"{CAPT}/70-recherche-missions.png", full_page=True)

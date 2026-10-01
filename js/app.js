@@ -44,15 +44,28 @@
   }
 
   /* ---------- Accueil ---------- */
+  function carteExamen() {
+    var n = MF.examen.activitesJouees(), act = etat().activites.examen;
+    var contenu = '<span class="act-icone">' + MF.badges.icone(24) + '</span><span class="act-corps"><span class="act-tete"><b>Examen blanc</b>' +
+      (act ? ui.etoiles(act.etoilesMax) : '') + '</span><span class="petit">20 questions et 2 missions, sans chronomètre</span>' +
+      (MF.examen.disponible() ? (act && act.records.blanc !== undefined ? '<span class="petit">Meilleur résultat : ' + act.records.blanc + ' %</span>' : '')
+        : '<span class="petit">S\'ouvre quand chaque activité a été jouée une fois (' + n + ' sur 5).</span>') + '</span>';
+    return MF.examen.disponible()
+      ? '<a class="carte carte-activite carte-examen-accueil" href="#/examen">' + contenu + '<span class="chevron" aria-hidden="true">›</span></a>'
+      : '<div class="carte carte-activite est-inactive">' + contenu + '</div>';
+  }
+
   function ecranAccueil(el) {
     var e = etat();
     var jours = MF.progression.joursCetteSemaine();
+    var nouveaux = MF.badges.nouveaux();
     var h = '<div class="page">' +
       '<p class="marque">Mission Finder</p>' +
       '<h1>Bonjour' + (e.pseudo ? ' ' + ui.esc(e.pseudo) : '') + ' !</h1>' +
       '<p class="intro">Révisez le TE1 : fichiers et dossiers sous macOS.</p>' +
       blocNiveau() +
       (jours > 0 ? '<p class="semaine">✓ ' + jours + ' jour' + (jours > 1 ? 's' : '') + ' de révision cette semaine</p>' : '') +
+      nouveaux.map(function (b) { return '<a class="carte carte-badge-nouveau" href="#/badges">' + MF.badges.icone(28) + '<span><b>Nouveau badge : ' + ui.esc(b.nom) + '</b><span class="petit">' + ui.esc(b.description) + '</span></span></a>'; }).join('') +
       carteRevision() +
       '<h2 class="titre-section">Activités</h2><ul class="liste-activites">';
     ACTIVITES.forEach(function (a) {
@@ -70,7 +83,9 @@
         ? '<a class="carte carte-activite" href="' + a.route + '">' + contenu + '<span class="chevron" aria-hidden="true">›</span></a>'
         : '<div class="carte carte-activite est-inactive">' + contenu + '</div>') + '</li>';
     });
-    h += '</ul><p class="version">Version : ' + ui.esc(window.TEXTES.version) + '</p></div>';
+    h += '</ul>' + carteExamen() +
+      '<p class="lien-badges"><a href="#/badges">' + MF.badges.icone(20) + ' Mes badges : ' + MF.badges.compte() + ' sur ' + window.BADGES.length + '</a></p>' +
+      '<p class="version">Version : ' + ui.esc(window.TEXTES.version) + '</p></div>';
     el.innerHTML = h;
     el.querySelector('[data-action="revision"]').addEventListener('click', function () { MF.qcm.demarrer('revision'); });
   }
@@ -87,6 +102,9 @@
       h += '<span class="bilan-act">' + ui.esc(a.nom) + ' ' +
         (a.actif ? ui.etoiles(st ? st.etoilesMax : 0, 14) : '<span class="bilan-bientot">bientôt</span>') + '</span>';
     });
+    var ex = e.activites.examen;
+    h += '<span class="bilan-act">Examen blanc <b>' + (ex && ex.records.blanc !== undefined ? ex.records.blanc + ' %' : '—') + '</b></span>' +
+      '<span class="bilan-act">Badges <b>' + MF.badges.compte() + ' / ' + window.BADGES.length + '</b></span>';
     h += '</div><h2 class="titre-section">Maîtrise par objectif</h2>';
     window.OBJECTIFS.themes.forEach(function (t) {
       var mt = MF.progression.maitriseTheme(t.code);
@@ -211,6 +229,21 @@
     });
   }
 
+  /* ---------- Mes badges ---------- */
+  function ecranBadges(el) {
+    MF.badges.nouveaux();
+    var liste = MF.badges.liste();
+    var h = '<div class="page"><p class="fil"><a href="#/accueil">‹ Accueil</a></p><h1>Mes badges</h1>' +
+      '<p class="intro">' + liste.filter(function (x) { return x.obtenu; }).length + ' sur ' + liste.length + '. Chaque badge récompense ce que vous maîtrisez.</p><ul class="liste-badges">';
+    liste.forEach(function (x) {
+      var d = x.date ? x.date.split('-').reverse().join('.') : '';
+      h += '<li class="carte badge' + (x.obtenu ? ' est-obtenu' : '') + '"><span class="badge-icone">' + MF.badges.icone(32) + '</span><span class="badge-corps">' +
+        '<b>' + ui.esc(x.badge.nom) + '</b><span class="petit">' + ui.esc(x.badge.description) + '</span>' +
+        '<span class="badge-etat">' + (x.obtenu ? '✓ Obtenu' + (d ? ' le ' + d : '') : 'Pas encore : ' + ui.esc(x.progression)) + '</span></span></li>';
+    });
+    el.innerHTML = h + '</ul></div>';
+  }
+
   /* ---------- Aide ---------- */
   var PARTAGER_IOS = '<svg class="ico-inline" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><path d="M8 9H6v11h12V9h-2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 3v11M8.5 6.5L12 3l3.5 3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
   var MENU_ANDROID = '<svg class="ico-inline" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false"><circle cx="12" cy="5" r="1.8" fill="currentColor"/><circle cx="12" cy="12" r="1.8" fill="currentColor"/><circle cx="12" cy="19" r="1.8" fill="currentColor"/></svg>';
@@ -225,6 +258,9 @@
       '<li>Étoiles d\'une partie : ★ dès 50 % des points possibles, ★★ dès 75 %, ★★★ à 100 % (tout juste du premier coup).</li>' +
       '<li>La <b>maîtrise</b> d\'un objectif compte vos réponses justes du premier coup parmi les 10 dernières.</li>' +
       '<li><b>Révision du jour</b> : les questions ratées reviennent en priorité. Une question réussie du premier coup revient plus tard : après 1 jour, puis 3, 7 et 14 jours.</li>' +
+      '<li><b>Missions</b> (Le grand rangement, Détective du Finder) : 100 points la première fois qu\'une mission est réussie ; ★★★ sans indice, ★★ avec un indice, ★ avec le dernier indice.</li>' +
+      '<li><b>Badges</b> : 8 badges récompensent ce que vous maîtrisez (onglet Accueil, « Mes badges »).</li>' +
+      '<li><b>Examen blanc</b> : il s\'ouvre quand chaque activité a été jouée une fois ; il se termine par un bilan et un conseil de révision.</li>' +
       '<li>Pas de chronomètre : prenez le temps de lire les explications.</li></ul></details>' +
 
       '<details class="carte"><summary>Où est enregistrée ma progression ?</summary>' +
@@ -274,7 +310,10 @@
     'recherche/mission': { f: function (el) { MF.recherche.ecranMission(el); }, titre: 'Détective du Finder', jeu: true },
     'bilan': { f: ecranBilan, titre: 'Mon bilan', nav: 'bilan' },
     'profil': { f: ecranProfil, titre: 'Profil', nav: 'profil' },
-    'aide': { f: ecranAide, titre: 'Aide', nav: 'aide' }
+    'aide': { f: ecranAide, titre: 'Aide', nav: 'aide' },
+    'examen': { f: function (el) { MF.examen.ecranAccueil(el); }, titre: 'Examen blanc', nav: 'accueil' },
+    'examen/bilan': { f: function (el) { MF.examen.ecranBilan(el); }, titre: 'Bilan de l\'examen blanc', nav: 'accueil' },
+    'badges': { f: ecranBadges, titre: 'Mes badges', nav: 'accueil' }
   };
 
   function router() {
@@ -288,6 +327,7 @@
     if (cle === 'bureau/partie' && !MF.bureau.aUnePartie()) { ui.remplacer('#/bureau'); return; }
     if (cle === 'bureau/resultat' && !MF.bureau.aUnResultat()) { ui.remplacer('#/bureau'); return; }
     if (cle === 'atelier/mission' && !MF.atelier.aUneMission()) { ui.remplacer('#/atelier'); return; }
+    if (cle === 'examen/bilan' && !MF.examen.aUnBilan()) { ui.remplacer('#/examen'); return; }
     if (cle === 'recherche/mission' && !MF.recherche.aUneMission()) { ui.remplacer('#/recherche'); return; }
 
     var app = document.getElementById('app');

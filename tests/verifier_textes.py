@@ -7,7 +7,7 @@ os.chdir(RACINE)
 echecs = []
 
 # 1. Vouvoiement : mots du tutoiement dans les chaînes des fichiers du site
-fichiers = glob.glob("js/**/*.js", recursive=True) + glob.glob("data/*.js") + ["index.html"]
+fichiers = glob.glob("js/**/*.js", recursive=True) + glob.glob("data/*.js") + ["index.html", "diffusion/fiche-eleve.html"]
 # Noms propres tirés des documents de cours, qui ressemblent à du tutoiement.
 EXCEPTIONS = ["Al Tes"]   # auteur fictif de l'exercice 5
 TUTOIEMENT = re.compile(r"\b(tu|ton|ta|tes|toi|te|tien|tienne|choisis|reviens|réponds|peux|veux|dois|sais|fais)\b", re.I)
@@ -29,7 +29,7 @@ for f in fichiers:
 
 # 2. Chemins absolus et ressources externes
 for f in glob.glob("**/*", recursive=True):
-    if not f.endswith((".html", ".css", ".js", ".webmanifest")) or f.startswith("tests/"): continue
+    if not f.endswith((".html", ".css", ".js", ".webmanifest")) or f.startswith(("tests/", "diffusion/")): continue
     t = open(f, encoding="utf-8").read()
     for m in re.finditer(r"""(?:href|src)\s*=\s*["']/|url\(\s*/|https?://""", t):
         extrait = t[m.start():m.start() + 60]
@@ -38,8 +38,8 @@ for f in glob.glob("**/*", recursive=True):
     if re.search(r"\bfetch\s*\(|type\s*=\s*[\"']module", t): echecs.append(f"fetch ou module ES dans {f}")
     if re.search(r"⌘\s*Y\b", t): echecs.append(f"⌘ Y (exclu) dans {f}")
 
-# 3. Poids du site (hors docs/ et tests/)
-poids = sum(p.stat().st_size for p in RACINE.rglob("*") if p.is_file() and not any(x in p.parts for x in ("docs", "tests", ".git")))
+# 3. Poids du site (hors docs/, tests/ et diffusion/, non chargés par le site)
+poids = sum(p.stat().st_size for p in RACINE.rglob("*") if p.is_file() and not any(x in p.parts for x in ("docs", "tests", "diffusion", ".git")))
 print(f"Poids du site : {poids/1024:.0f} Ko (limite 1024 Ko)")
 if poids > 1024 * 1024: echecs.append("poids du site > 1 Mo")
 

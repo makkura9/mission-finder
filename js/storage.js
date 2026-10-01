@@ -30,7 +30,8 @@
       objectifs: {},   // code -> [1,0,1…] : 10 dernières réponses (1 = juste du premier coup)
       questions: {},   // id -> { vues, justes1, boite, derniere }
       activites: {},   // activité -> { parties, etoilesMax, records: { mode: points } }
-      jours: []        // dates « AAAA-MM-JJ » des jours de révision
+      jours: [],       // dates « AAAA-MM-JJ » des jours de révision
+      badges: {}       // id du badge -> date d'obtention « AAAA-MM-JJ » (phase 7 ; facultatif dans les anciens états)
     };
   }
 
@@ -73,6 +74,9 @@
       };
     });
     propre.jours = o.jours.filter(function (j) { return typeof j === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(j); }).slice(-120);
+    if (estObjet(o.badges)) Object.keys(o.badges).forEach(function (id) {
+      if (typeof o.badges[id] === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(o.badges[id])) propre.badges[id] = o.badges[id];
+    });
     return migrer(propre, o.version);
   }
 

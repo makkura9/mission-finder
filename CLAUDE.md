@@ -32,6 +32,7 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 | Système de score | Validé, implémenté dans `js/progression.js` et `js/modules/qcm.js` (voir section 4) |
 | Menu Pomme (figures) | Pomme générique dessinée : **validé** (phase 3) |
 | Libellés iPhone / Android (Aide) | Délégué à Claude (phase 3) : l'Aide garde les deux variantes (« Sur l'écran d'accueil » ou « Ajouter à l'écran d'accueil » ; « Ajouter à l'écran d'accueil » ou « Installer l'application ») |
+| Mode hors ligne (service worker) | **Non** (phase 7) : le site demande une connexion ; ne pas en ajouter |
 | Répétition espacée (phase 3) | Boîtes 1 à 5 ; retour après 0, 1, 3, 7, 14 jours (`js/leitner.js`) ; Révision du jour = 5 à 10 questions, d'abord les ratées, complétées par des nouvelles, thèmes entrelacés ; Quiz express = d'abord questions à revoir ou jamais vues |
 
 ## 3. Règles impératives (rappel du cahier des charges)
@@ -46,10 +47,10 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
 ## 4. Architecture et conventions techniques
 
 - HTML + CSS + JavaScript « vanilla », **sans module ES** (`<script type="module">` est bloqué en `file://`), sans framework, sans compilation, sans `npm` pour le site, **sans aucune ressource externe** (CDN, polices web, analytics).
-- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.leitner`, `MF.figures`, `MF.partie`, `MF.qcm`, `MF.clavier`, `MF.bureau`, `MF.atelierModele`, `MF.atelier`, `MF.rechercheModele`, `MF.recherche`).
-- Données dans `data/*.js` (`window.QUESTIONS`, `window.OBJECTIFS`, `window.NIVEAUX`, `window.TEXTES`, `window.RACCOURCIS`, `window.BUREAU`, `window.ATELIER`, `window.LIBELLES_MACOS`, `window.RECHERCHE`), **jamais** de `fetch` de JSON : le site doit marcher ouvert par double-clic.
+- Scripts classiques chargés dans l'ordre par `index.html` ; espace de noms global `window.MF` (`MF.ui`, `MF.stockage`, `MF.progression`, `MF.leitner`, `MF.figures`, `MF.partie`, `MF.qcm`, `MF.clavier`, `MF.bureau`, `MF.atelierModele`, `MF.atelier`, `MF.rechercheModele`, `MF.recherche`, `MF.badges`, `MF.examen`).
+- Données dans `data/*.js` (`window.QUESTIONS`, `window.OBJECTIFS`, `window.NIVEAUX`, `window.TEXTES`, `window.RACCOURCIS`, `window.BUREAU`, `window.ATELIER`, `window.LIBELLES_MACOS`, `window.RECHERCHE`, `window.BADGES`), **jamais** de `fetch` de JSON : le site doit marcher ouvert par double-clic.
 - **Chemins relatifs uniquement** (`css/style.css`, jamais `/css/…`).
-- Navigation par ancre : `#/accueil`, `#/qcm`, `#/qcm/partie`, `#/qcm/resultat`, `#/clavier`, `#/clavier/partie`, `#/clavier/resultat`, `#/bureau`, `#/bureau/partie`, `#/bureau/resultat`, `#/atelier`, `#/atelier/mission`, `#/recherche`, `#/recherche/mission`, `#/bilan`, `#/profil`, `#/aide` (routeur dans `js/app.js`).
+- Navigation par ancre : `#/accueil`, `#/qcm`, `#/qcm/partie`, `#/qcm/resultat`, `#/clavier`, `#/clavier/partie`, `#/clavier/resultat`, `#/bureau`, `#/bureau/partie`, `#/bureau/resultat`, `#/atelier`, `#/atelier/mission`, `#/recherche`, `#/recherche/mission`, `#/examen`, `#/examen/bilan`, `#/badges`, `#/bilan`, `#/profil`, `#/aide` (routeur dans `js/app.js`).
 - Le manifeste n'est déclaré qu'en `http(s)` (petit script dans `<head>`) pour éviter une erreur console en `file://`.
 - Sauvegarde : `localStorage`, clé unique `missionFinder.v1`, objet avec `app` et `version` (migrations dans `js/storage.js`) ; toute lecture/écriture en `try/catch` ; repli en mémoire + bandeau si stockage indisponible ; export/import par code `MF1-` + base64 (UTF-8).
 - Score : 10 points du premier coup, 5 au 2e essai, 0 ensuite ; bonus de série +2 par réponse juste **du premier coup** consécutive (dès la 2e), +10 max par partie ; étoiles sur points de base / (10 × n) : ★ ≥ 50 %, ★★ ≥ 75 %, ★★★ = 100 % ; missions (phases 5-6) : 100 points, ★★★ sans indice, ★★ avec indice, ★ avec le dernier indice. Maîtrise d'un objectif : % de justes du premier coup sur les 10 dernières réponses, « à découvrir » sous 3 réponses ; maîtrise d'un thème = moyenne des objectifs évalués. Niveaux dans `data/niveaux.js`.
@@ -74,6 +75,12 @@ les décisions de la section 2 ci-dessous l'emportent sur le cahier des charges.
   incomplète ignorée, majuscules et accents ignorés) + mission 10 photos mystères (panneau « Métadonnées de la photo », choix 1).
   Réussite = ensemble affiché exactement égal à l'attendu (toute combinaison acceptée). Pas de champ de recherche libre.
   Mêmes points et étoiles que l'atelier ; `activites.recherche.records[sX]`.
+- Examen blanc (phase 7, `js/modules/examen.js`) : ouvert quand les 5 activités ont `parties ≥ 1` ; 20 questions (QCM mode « examen » :
+  une par objectif + 1), 1 mission m6/m7/m8, 1 mission s3/s4/s6/s7/s9 (via `commencer(k, { examen: true })`, « Passer » possible) ;
+  note : juste du 1er coup = 1, mission sans indice = 1, avec indice = 0,5 ; `activites.examen.records.blanc` = meilleur % ;
+  recommandation si le thème le plus faible est < 80 %. Pas de chronomètre.
+- Badges (phase 7) : 8, tous liés à une maîtrise (`data/badges.js` textes, `js/badges.js` conditions) ; `etat.badges[id]` = date
+  d'obtention (champ facultatif : les anciens états se chargent) ; annoncés une fois sur l'accueil ; écran `#/badges`.
 - Mobile d'abord : 360 px de référence, colonne 480 px max, cibles tactiles ≥ 44 px, champs ≥ 16 px, aucun survol ni glisser-déposer indispensable.
 - Numéro de version affiché en bas de l'accueil et de l'aide : `window.TEXTES.version` dans `data/textes.js` — **le mettre à jour à chaque phase** (l'enseignant s'en sert pour vérifier la mise en ligne).
 
@@ -90,8 +97,14 @@ node tests/test-atelier.js             # Le grand rangement : 9 missions soluble
 python3 tests/test_phase5.py           # Playwright : atelier (nouveau dossier, Presque, annuler, décompresser, déplacer, Corbeille, indices, 4 tailles)
 node tests/test-recherche.js           # Détective : jeu discriminant (solutions justes, erreurs typiques refusées, 4 dates), messages
 python3 tests/test_phase6.py           # Playwright : Spotlight, recherche avancée, photos mystères, 4 tailles, file://
+python3 tests/test_phase7.py           # Playwright : examen blanc complet, badges, ancien état sans badges, 4 tailles, file://
 python3 tests/test_bilan_rempli.py     # « Mon bilan » rempli : aucun débordement, ≤ 600 px de haut dès 360 px
+python3 tests/test_phase8.py           # message clair si data/questions.js est cassé (3 erreurs du guide), fiche élève, QR code
 ```
+
+Diffusion (phase 8) : `python3 tests/generer_diffusion.py` régénère `diffusion/qr-code-mission-finder.png`, `fiche-eleve.html`
+et `fiche-eleve.pdf` (A4, deux demi-pages) ; nécessite `pip install segno` (et `opencv-python-headless` pour relire le QR code).
+Si un fichier `data/*.js` ne se charge pas, `index.html` affiche « Site momentanément indisponible » avec le fichier et la ligne.
 
 Environnement cloud (vérifié en phase 3) : Chromium est préinstallé (`/opt/pw-browsers`, révision 1194).
 Installer la version de Playwright correspondante : `pip install playwright==1.56.0` (la dernière version
@@ -117,9 +130,9 @@ https://makkura9.github.io/mission-finder/tests/relecture.html ; imprimer en PDF
 | 3 Banque QCM (90 questions) + fichier de relecture + Leitner / Révision du jour + bilan compacté | ✅ validée (90 questions relues : toutes OK ; tests sur téléphone OK) |
 | 4 Raccourcis (Clavier secret) + Bureau (Visite du Mac) | ✅ validée (textes relus, tests sur téléphone OK) |
 | 5 Atelier fichiers (Le grand rangement) | ✅ validée (relecture et tests sur téléphone OK) |
-| 6 Recherche (Détective du Finder) | livrée sur une branche ; **en attente** : relecture (section « Phase 6 » de `tests/relecture.html`), tests sur téléphone et « validé » |
-| 7 Examen blanc, badges, finitions | à faire (examen blanc **sans** chronomètre) |
-| 8 QR code, fiche élève, README final | à faire |
+| 6 Recherche (Détective du Finder) | ✅ validée (relecture et tests sur téléphone OK) |
+| 7 Examen blanc, badges, finitions | ✅ validée (relecture et tests sur téléphone OK ; hors ligne : non) |
+| 8 QR code, fiche élève, README final | livrée sur une branche ; **en attente** : impression d'essai de la fiche, scan du QR code, « validé » |
 
 ## 8. Points ouverts (réponses attendues de l'enseignant)
 

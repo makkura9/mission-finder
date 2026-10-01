@@ -65,6 +65,7 @@
 <div id="phase4"></div>
 <div id="phase5"></div>
 <div id="phase6"></div>
+<div id="phase7"></div>
 <script src="../data/objectifs.js"></script>
 <script src="../data/questions.js"></script>
 <script src="../data/raccourcis.js"></script>
@@ -73,6 +74,7 @@
 <script src="../data/libelles-macos.js"></script>
 <script src="../data/fichiers-virtuels.js"></script>
 <script src="../js/recherche-modele.js"></script>
+<script src="../data/badges.js"></script>
 <script src="../js/ui.js"></script>
 <script src="../js/figures.js"></script>
 <script>
@@ -95,7 +97,7 @@
     ? QUESTIONS.length + ' questions, dont ' + nouvelles + ' à relire (badge « À relire »). Bonne(s) réponse(s) en vert (✓). ' +
       'Sous chaque distracteur : l\'explication affichée si l\'élève le choisit. Cochez « OK » ou notez la correction (identifiant de la question + texte corrigé).'
     : 'Les ' + QUESTIONS.length + ' questions du Quiz express sont validées (cochez la case pour les afficher). ') +
-    ' Les textes des phases 4 et 5 sont validés. À relire en phase 6 : « Détective du Finder », ci-dessous.';
+    ' Tous les textes (phases 2 à 7) sont relus et validés.';
   function afficher() {
   const voirValidees = document.getElementById('voir-validees').checked;
   let h = '';
@@ -181,7 +183,7 @@
   (function () {
     const R = RECHERCHE, M = MF.rechercheModele, auj = new Date();
     const ligne = l => esc(l.critere + ' ' + l.operateur + ' ' + (l.valeur !== undefined ? '« ' + l.valeur + ' »' : l.date ? l.date.split('-').reverse().join('.') : l.nombre + (l.unite ? ' ' + l.unite : '')));
-    let h = '<h2>Détective du Finder — les missions <span class="badge badge-nouvelle">À relire</span></h2>' +
+    let h = '<h2>Détective du Finder — les missions <span class="badge badge-validee">Validée</span></h2>' +
       '<table class="relire"><thead><tr><th>Mission</th><th>Consigne et indices</th><th>Recherche(s) acceptée(s) → résultat attendu</th><th>Erreurs typiques refusées</th></tr></thead><tbody>';
     R.missions.forEach((m, k) => {
       const attendu = m.solutions ? M.attendu(m.id, auj).map(e => esc(e.nom)).join(', ') : '';
@@ -191,7 +193,7 @@
           : m.photos.map(id => esc(M.element(id).nom) + ' (' + esc(M.element(id).apercu) + ', ' + esc(M.element(id).lieu) + ')').join('<br>')) + '</td><td>' +
         (m.erreurs ? m.erreurs.map(s => s.map(ligne).join(' ET ')).join('<br>') : '') + '</td></tr>';
     });
-    h += '</tbody></table><h2>Détective du Finder — fichiers fictifs (' + R.elements.length + ') <span class="badge badge-nouvelle">À relire</span></h2>' +
+    h += '</tbody></table><h2>Détective du Finder — fichiers fictifs (' + R.elements.length + ') <span class="badge badge-validee">Validée</span></h2>' +
       '<table class="relire"><thead><tr><th>Nom</th><th>Type</th><th>Dossier</th><th>Modifié</th><th>Auteur</th><th>Pages</th><th>Contenu (mots)</th></tr></thead><tbody>';
     R.elements.forEach(e => {
       h += '<tr><td>' + esc(e.nom) + '</td><td>' + esc(e.type) + '</td><td>' + esc(e.dossier) + '</td><td>' + (e.date ? esc(e.date.split('-').reverse().join('.')) : 'il y a ' + e.jours + ' j') +
@@ -203,6 +205,21 @@
       '<tr><th>Simplifications</th><td>Pas de champ de recherche libre (seulement les lignes de critères) ; majuscules et accents ignorés dans « contient » ; dans le site, un PDF n\'est pas de type « Document » (à vérifier sur un Mac) ; photos : panneau « Métadonnées de la photo » sans nommer l\'outil de macOS (votre choix 1).</td></tr>' +
       '</tbody></table>';
     document.getElementById('phase6').innerHTML = h;
+  })();
+
+  // Phase 7 : badges et examen blanc
+  (function () {
+    let h = '<h2>Les 8 badges <span class="badge badge-validee">Validée</span></h2><table class="relire"><thead><tr><th>Badge</th><th>Texte affiché (comment l\'obtenir)</th></tr></thead><tbody>' +
+      BADGES.map(b => '<tr><td><b>' + esc(b.nom) + '</b></td><td>' + esc(b.description) + '</td></tr>').join('') + '</tbody></table>' +
+      '<h2>L\'examen blanc <span class="badge badge-validee">Validée</span></h2><table class="relire"><tbody>' +
+      '<tr><th>Ouverture</th><td>Quand chaque activité a été jouée au moins une fois (message : « Jouez d\'abord au moins une fois chaque activité (n sur 5) »).</td></tr>' +
+      '<tr><th>Partie 1</th><td>20 questions du Quiz express : une par objectif (19) + une au hasard ; règles habituelles (2 essais, explications).</td></tr>' +
+      '<tr><th>Partie 2</th><td>Une mission courte du Grand rangement tirée au hasard : doublons, noms explicites ou compression.</td></tr>' +
+      '<tr><th>Partie 3</th><td>Une mission du Détective tirée au hasard parmi les recherches à deux critères (3, 4, 6, 7, 9).</td></tr>' +
+      '<tr><th>Note</th><td>Question juste du premier coup = 1 ; mission réussie sans indice = 1, avec indice = 0,5 ; mission passée = 0. Résultat en %, étoiles comme une partie. Pas de chronomètre.</td></tr>' +
+      '<tr><th>Bilan</th><td>% par thème ; si le plus faible est sous 80 % : « Révisez en priorité : [thème] (x %) » + bouton « Quiz express : [thème] » et l\'activité correspondante ; sinon « Bravo : tous les thèmes sont à 80 % ou plus. »</td></tr>' +
+      '</tbody></table>';
+    document.getElementById('phase7').innerHTML = h;
   })();
 </script>
 </body>

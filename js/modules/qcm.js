@@ -22,8 +22,8 @@
   }
 
   function nouvellePartie(mode) {
-    var tirage = mode === 'revision'
-      ? MF.leitner.tirageRevision()
+    var tirage = mode === 'revision' ? MF.leitner.tirageRevision()
+      : mode === 'examen' ? MF.examen.tirageQcm()
       : MF.leitner.entrelacer(MF.leitner.prioriser(questionsDuMode(mode)).slice(0, TAILLE_PARTIE));
     partie = {
       mode: mode,
@@ -141,6 +141,7 @@
         return { enonce: it.q.enonce + fichier, bonne: texteBonnes(it.q), explication: it.q.explication };
       })
     };
+    if (partie.mode === 'examen') MF.examen.finQcm(partie.items);
     partie = null;
     ui().remplacer('#/qcm/resultat');
   }
@@ -287,7 +288,7 @@
       '<p class="resultat-score">' + ui().points(r.total) + '</p>' +
       '<p class="petit">' + (r.bonus ? 'dont bonus de série : +' + r.bonus + ' · ' : '') + 'justes du premier coup : ' + r.justes1 + ' / ' + r.n + '</p>';
     // Pas de record pour la Révision du jour : sa longueur varie (5 à 10 questions).
-    if (r.mode !== 'revision') {
+    if (r.mode !== 'revision' && r.mode !== 'examen') {
       if (r.record.nouveauRecord) h += '<p class="resultat-record">Nouveau record ! ' + (r.record.ancienRecord !== null ? '(ancien : ' + ui().points(r.record.ancienRecord) + ')' : '') + '</p>';
       else h += '<p class="petit">Votre record (' + ui().esc(ui().nomTheme(r.mode)) + ') : ' + ui().points(r.record.record) + '</p>';
     }
@@ -306,6 +307,11 @@
       h += '</ul>';
     } else {
       h += '<p class="intro">Toutes vos réponses étaient justes du premier coup.</p>';
+    }
+    if (r.mode === 'examen') {
+      h += '<div class="boutons-fin"><a class="btn btn-bloc" href="#/examen">Continuer l\'examen blanc</a></div></div>';
+      el.innerHTML = h;
+      return;
     }
     h += '<div class="boutons-fin"><button type="button" class="btn btn-bloc" data-action="rejouer">' +
       (r.mode === 'revision' ? 'Nouvelle révision' : 'Rejouer (' + ui().esc(ui().nomTheme(r.mode)) + ')') + '</button>' +

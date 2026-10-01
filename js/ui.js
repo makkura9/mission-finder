@@ -53,6 +53,7 @@
   function nomTheme(code) {
     if (code === 'melange') return 'Tous les thèmes';
     if (code === 'revision') return 'Révision du jour';
+    if (code === 'examen') return 'Examen blanc';
     var t = window.OBJECTIFS.themes.filter(function (x) { return x.code === code; })[0];
     return t ? t.nom : code;
   }
