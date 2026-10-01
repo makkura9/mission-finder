@@ -132,7 +132,9 @@ https://makkura9.github.io/mission-finder/tests/relecture.html ; imprimer en PDF
 | 5 Atelier fichiers (Le grand rangement) | ✅ validée (relecture et tests sur téléphone OK) |
 | 6 Recherche (Détective du Finder) | ✅ validée (relecture et tests sur téléphone OK) |
 | 7 Examen blanc, badges, finitions | ✅ validée (relecture et tests sur téléphone OK ; hors ligne : non) |
-| 8 QR code, fiche élève, README final | livrée sur une branche ; **en attente** : impression d'essai de la fiche, scan du QR code, « validé » |
+| 8 QR code, fiche élève, README final | ✅ validée (version « phase 8 » vérifiée sur téléphone et PC) — **projet terminé** |
+
+Suite éventuelle : corrections ou ajouts ponctuels demandés par l'enseignant (même flux : branche, tests, fusion, numéro de version).
 
 ## 8. Points ouverts (réponses attendues de l'enseignant)
 
